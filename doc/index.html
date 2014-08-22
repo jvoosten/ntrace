@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>NTrace documentation</title>
+  </head>
+
+
+  <body>
+    <h1>NTrace: C++ debugging &amp; tracing library</h1>
+
+    <h2>Introduction</h2>
+
+    <p>Debugging your program, or simply keeping track of what it is doing is never easy.
+      <b>printf()</b> statements scattered throughout the code clutter up your source files
+      and either produce too much or too little output. Hooking up the program to a debugger can
+      show great detail of what the program is doing and why, but doesn't present a clear
+      picture of the program flow.</p>
+
+    <p>NTrace is a small library that, in combination with some clever C-style macros, helps
+      to track program flow and show only the debug information you are interested in. It is certainly
+      not the first, the last or the best debug library, but it might just be what you are looking for.</p>
+
+    <h2>Features</h2>
+
+    <ul>
+      <li>printf() style formatting</li>
+      <li>Uses C preprocessor; no overhead for production version</li>
+      <li>Adjustable debug levels, per file or module</li>
+      <li>Tracks function enter and leaves</li>
+    </ul>
+
+    <p>However, there are a few limitations:</p>
+
+    <ul>
+      <li>Works with C++ only</li>
+      <li>Not thread safe (that is, debug information from simultaneously running threads may get interleaved)</li>
+    </ul>
+
+    <h2>Basic functionality</h2>
+
+    <p>There are two parts in NTrace: a way to keep track of function calls as the
+      program enter and leaves them, and print debug info using the printf() syntax.
+      The latter has a debug 'level', so that more or less information can be
+      printed as desired. This level is set per module and can be changed at runtime.</p>
+
+    <p>A module in NTrace can be a file or multiple files (module); the grouping of source files
+      into modules is up to you.</p>
+
+    <p>The NTrace library consists of just a few C++ classes; after installation there will
+      be a shared library and some C++ header files on your system.
+      However, these classes are <b>not</b> your interface to NTrace;
+      rather, an extra header file (sample included) should be copied
+      to your project and included in your source file(s). This header file contains C-style
+      macros to do all the 'magic' of disabling all tracing when building your production
+      version.</p>
+
+    <p>The decision was made to not force this sample header to be <em>the</em>
+      interface to NTrace as you may need to tweak the file, depending on your
+      project's needs. The header file does work &quot;out-of-the-box&quot;, though.</p>
+
+
+    <h2>Example</h2>
+
+    <p>Let's assume we use a copy of the sample header file and renamed it to <b>logger.h</b>.
+      A typical piece of code may then look like this:</p>
+
+    <code style="white-space:pre; padding-left: 2em; background-color: #f0f0f0; display: block;">
+#include &quot;logger.h&quot;
+#include &quot;mandelbrot.hh&quot;
+
+TR_MODULE(&quot;Mandelbrot&quot;);
+
+MandelBrot::MandelBrot (float minx, float maxx, float miny, float maxy)
+{
+  TR_FUNC(&quot;[%f,%f; %f,%f]&quot;, minx, miny, maxx, maxy);
+
+  ....
+  value = new int[num_lines * num_columns];
+  if (!value)
+  {
+    TR_ERR ("Could not allocate memory!");
+    return;
+  }
+  ....
+}
+
+void MandelBrot::calculateAll ()
+{
+  TR_FUNC ():
+
+  for (int i = 0; i < lines; i++)
+  {
+    TR (2, "line = %d", i);
+    calculateLine (i);
+  }
+}
+
+void MandelBrot::calculateLine (int line)
+{
+  TR_FUNC ();
+
+  for (int j = 0; j < columns; j++)
+  {
+    TR (3, "column = %d", j);
+    value[line][j] = calculatePixel (line, j);
+  }
+}
+
+</code>
+
+    <p><b>TR_MODULE</b> is mandatory for any file that contains NTrace macros; it contains the name
+      of the module as a string. This module name is used to select the module debug level; multiple files
+      may belong to the same module but all files will use the same debug level. TR_MODULE can be
+      used only once per source file.</p>
+
+    <p><b>TR_FUNC</b> keeps track of function calls. It does so by defining an object
+      within the function that is automatically created and destroyed upon enter and leave.
+      The full function name is printed in the tracing output, including optional parameters
+      as show in the MandelBrot constructor. Nested function calls are shown indented
+      in the debug output, making it easy to see where a function starts and ends.</p>
+
+    <p><b>TR</b> is the real debugging workhorse. It has at least 2 parameters, a debug level
+      and a format specifier, followed by any required variables. The debug level in TR()
+      is fixed during compilation; the higher the number, the more detailed the information
+      should be (note the difference between calculateAll() and calculateLine()). At runtime
+      it is determined if output should be printed or not; if the module debug
+      level is higher or equal than the level in TR(), output is produced.<br />
+
+      Note that if the module debug level is lower than the TR() level, there is still
+      overhead for calling the NTrace library functions.</p>
+
+    <p><b>TR_ERR</b> is a macro that will always print a message to stderr, even in
+      release mode. It should be used for severe and/or fatal errors.</p>
+
+    <p>Three things to remember:</p>
+    <ul>
+      <li>Use a trailing semicolon (;) after each macro.</li>
+      <li>Parenthesis are required, even if there are no parameters.</li>
+      <li>A linefeed is automatically added to each debug message.</li>
+    </ul>
+
+    <h2>Example output</h2>
+
+
+
+    <h2>Installation &amp; integration into your own program</h2>
+
+    <h3>Requirements</h3>
+
+    <ul>
+      <li>GCC 4.3 or higher</li>
+     </ul>
+
+    ... build
+
+    ...autoconf
+
+    .. tweaking logger.hh
+
+    <h2>Macro reference</h2>
+
+    <p>This section describes the default macro set in detail (of course, you are free to create
+      your own macros if you so desire). The macros are divided into three parts:
+      those for initialization, adjusting debug output and those used inside
+      your functions.</p>
+
+    <h3>Macros for initialization</h3>
+
+    <p>The following macros are typically only called in your main() routine.
+
+    <h3>Setting module debug levels</h3>
+
+    <h3>Function macros</h3>
+
+  </body>
+
+</html>
+

@@ -1,0 +1,51 @@
+------------------------------------------------------------------------
+r907 | jvoosten | 2013-11-01 15:29:41 +0100 (Fri, 01 Nov 2013) | 2 lines
+
+- Fixed bug in error messsage
+- Proper library version increment
+------------------------------------------------------------------------
+r906 | jvoosten | 2013-10-30 23:43:35 +0100 (Wed, 30 Oct 2013) | 4 lines
+
+- Added option to log process ID yes/no
+- Added timestamp (also an option)
+
+
+------------------------------------------------------------------------
+r823 | jvoosten | 2013-05-06 00:51:26 +0200 (Mon, 06 May 2013) | 1 line
+
+Some documentation
+------------------------------------------------------------------------
+r764 | jvoosten | 2013-01-22 04:42:09 +0100 (Tue, 22 Jan 2013) | 1 line
+
+Forgot that you can't set the log level below 0; 0 is now "no entry/exit"
+------------------------------------------------------------------------
+r763 | jvoosten | 2013-01-22 04:41:58 +0100 (Tue, 22 Jan 2013) | 1 line
+
+Forgot that you can't set the log level below 0; 0 is now "no entry/exit"
+------------------------------------------------------------------------
+r762 | jvoosten | 2013-01-22 04:07:22 +0100 (Tue, 22 Jan 2013) | 1 line
+
+Suppres enter/exit message when level < 0
+------------------------------------------------------------------------
+r748 | jvoosten | 2013-01-05 21:08:27 +0100 (Sat, 05 Jan 2013) | 1 line
+
+Changed output for error message
+------------------------------------------------------------------------
+r747 | jvoosten | 2013-01-04 05:58:13 +0100 (Fri, 04 Jan 2013) | 1 line
+
+Fixing library version number (an interface was added)
+------------------------------------------------------------------------
+r743 | jvoosten | 2013-01-02 22:45:29 +0100 (Wed, 02 Jan 2013) | 1 line
+
+Added error() log function which always outputs something.
+------------------------------------------------------------------------
+r699 | jvoosten | 2012-09-24 23:49:33 +0200 (Mon, 24 Sep 2012) | 3 lines
+
+Added "printf" attribute to Function operator(), so it will check the syntax
+of TR_FUNC macros.
+
+------------------------------------------------------------------------
+r678 | jvoosten | 2012-07-11 19:51:00 +0200 (Wed, 11 Jul 2012) | 1 line
+
+Ntrace library
+------------------------------------------------------------------------
