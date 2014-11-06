@@ -151,10 +151,13 @@ void Manager::error (const std::string &err_string)
 /**
  \brief Output string to standard output
  \param out_string String to display
+
+ Prints a message directly to stdout, including a prefix. A new line ending
+ is automatically appended.
  */
 void Manager::out (const std::string &out_string)
 {
-  std::cout << out_string << std::endl;
+  std::cout << makePrefix () << out_string << std::endl;
 }
 
 /**
