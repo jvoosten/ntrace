@@ -29,11 +29,14 @@
 #define TR_FUNC     NTrace::Function TracerObject(s_trace_module, FUNCNAME); TracerObject
 #define TR          s_trace_module->log
 #define TR_ERR      s_trace_module->error
+#define TR_OUT      s_trace_module->out
 
 #define TR_READ_CONFIG(stream)  NTrace::Manager::instance()->readConfiguration(stream)
 #define TR_WRITE_CONFIG(stream) NTrace::Manager::instance()->writeConfiguration(stream)
 #define TR_SET_LOG(stream)      NTrace::Manager::instance()->setLogStream(stream)
 #define TR_SHUTDOWN             delete NTrace::Manager::instance
+#define TR_LOG_PID(boolean)     NTrace::Manager::instance()->setLogPid(boolean)
+#define TR_LOG_TIME(boolean)    NTrace::Manager::instance()->setLogTime(boolean)
 
 #else
 /* Simulate NTRACE macros by dummies */
@@ -42,12 +45,14 @@
 #define TR_FUNC(...)
 #define TR
 #define TR_ERR(...) fprintf (stderr, __VA_ARGS__); fprintf (stderr, "\n");
+#define TR_OUT(...)
 
 #define TR_READ_CONFIG(stream)
 #define TR_WRITE_CONFIG(stream)
 #define TR_SET_LOG(stream)
 #define TR_SHUTDOWN
-
+#define TR_LOG_PID(boolean)
+#define TR_LOG_TIME(boolean)
 #endif
 
 #endif

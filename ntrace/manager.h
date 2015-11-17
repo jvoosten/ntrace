@@ -20,6 +20,7 @@ private:
 
   modules_list m_modules;
   std::ostream *m_logStream;
+  bool m_ownLogStream;
 
   bool m_mute;
 
@@ -49,6 +50,7 @@ public:
   Module *registerModule (const std::string &module_name, int initial_value = 1);
 
   void setLogStream (std::ostream *str);
+  void setLogStream (const std::string &filename);
   void setLogPid (bool b);
   void setLogTime (bool b);
 

@@ -19,6 +19,7 @@ Manager::Manager ()
 {
   m_indent = 0;
   m_mute = false;
+  m_ownLogStream = false;
   m_logStream = 0;
   m_maxLines = 0;
 
@@ -35,6 +36,11 @@ Manager::Manager ()
 Manager::~Manager ()
 {
   s_pTraceManager = 0;
+  if (m_ownLogStream && m_logStream)
+  {
+    delete m_logStream;
+    m_logStream = 0;
+  }
 }
 
 // private
@@ -69,7 +75,9 @@ void Manager::decIndent ()
 Manager *Manager::instance ()
 {
   if (s_pTraceManager == 0)
+  {
     s_pTraceManager = new Manager ();
+  }
   return s_pTraceManager;
 }
 
@@ -92,9 +100,36 @@ Module *Manager::registerModule (const std::string &module_name, int initial_val
   return mod;
 }
 
+/**
+ \brief Set output logstream
+ \param str Stream object
+
+ Sets the output logstream; this can be cout/cerr or a file.
+ */
 void Manager::setLogStream (std::ostream *str)
 {
+  if (m_ownLogStream && m_logStream)
+  {
+    delete m_logStream;
+  }
+  m_ownLogStream = false;
   m_logStream = str;
+}
+
+/**
+ \brief Set output log filename
+ \param filename
+
+ Filename; the manager creates a stream object to write to
+ */
+void Manager::setLogStream (const std::string &filename)
+{
+  if (m_ownLogStream && m_logStream)
+  {
+    delete m_logStream;
+  }
+  m_ownLogStream = true;
+  m_logStream = new std::ofstream (filename.c_str ());
 }
 
 /// Enable/disable logging of process ID
