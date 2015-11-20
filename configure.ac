@@ -1,5 +1,5 @@
 AC_PREREQ([2.63])
-AC_INIT([libntrace], [0.2.9], [info@bankai.nl])
+AC_INIT([libntrace], [0.2.10], [info@bankai.nl])
 AM_INIT_AUTOMAKE([-Wall])
 AC_CONFIG_MACRO_DIR([m4])
 

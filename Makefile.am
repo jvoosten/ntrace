@@ -2,7 +2,7 @@
 lib_LTLIBRARIES=libntrace.la
 
 # Versioning CURRENT:REVISION:AGE
-libntrace_la_LDFLAGS=-version-info 5:0:4
+libntrace_la_LDFLAGS=-version-info 6:0:5
 	
 libntrace_la_SOURCES=\
   ntrace/function.cpp ntrace/manager.cpp ntrace/module.cpp

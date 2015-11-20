@@ -32,6 +32,7 @@ private:
 
   bool m_logPid;
   bool m_logTime;
+  bool m_logToStdout;
 
   struct timeval m_startTime;
 
@@ -49,10 +50,9 @@ public:
   static Manager *instance ();
   Module *registerModule (const std::string &module_name, int initial_value = 1);
 
-  void setLogStream (std::ostream *str);
-  void setLogStream (const std::string &filename);
   void setLogPid (bool b);
   void setLogTime (bool b);
+  void setLogToStdout (bool b);
 
   void log (const std::string &log_string);
   void error (const std::string &err_string);
@@ -62,6 +62,8 @@ public:
   void readConfiguration (const std::string &filename);
   void writeConfiguration (std::ostream &str);
   void writeConfiguration (const std::string &filename);
+  void setLogStream (std::ostream *str);
+  void setLogStream (const std::string &filename);
 
   void clearText ();
   void mark ();

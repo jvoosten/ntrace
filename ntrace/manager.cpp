@@ -25,6 +25,7 @@ Manager::Manager ()
 
   m_logPid = true;
   m_logTime = false;
+  m_logToStdout = true;
 
   char pidbuf[20];
   pidbuf[19] = '\0';
@@ -104,7 +105,8 @@ Module *Manager::registerModule (const std::string &module_name, int initial_val
  \brief Set output logstream
  \param str Stream object
 
- Sets the output logstream; this can be cout/cerr or a file.
+ Sets the output logstream; this can be cout/cerr, a file or something else
+ that is compatible with an ostream. Overrules setLogStream below.
  */
 void Manager::setLogStream (std::ostream *str)
 {
@@ -120,7 +122,8 @@ void Manager::setLogStream (std::ostream *str)
  \brief Set output log filename
  \param filename
 
- Filename; the manager creates a stream object to write to
+ Filename; the manager creates a stream object to write to. Overrules
+ setLogStream above.
  */
 void Manager::setLogStream (const std::string &filename)
 {
@@ -146,6 +149,16 @@ void Manager::setLogTime (bool b)
   m_logTime = b;
 }
 
+/// Enable/disable normal logging output to stdout in addition to a log stream
+
+void Manager::setLogToStdout (bool b)
+{
+  m_logToStdout = b;
+}
+
+
+/// A regular log message
+
 void Manager::log (const std::string &log_string)
 {
   std::string ns;
@@ -163,6 +176,10 @@ void Manager::log (const std::string &log_string)
   if (0 != m_logStream)
   {
     *m_logStream << ns << std::endl;
+  }
+  if (m_logToStdout)
+  {
+    std::cout << ns << std::endl;
   }
 }
 
