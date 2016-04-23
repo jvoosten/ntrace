@@ -28,7 +28,7 @@ private:
   std::string m_indentString;
   std::string m_pidString;
   std::deque<std::string> m_loggedText;
-  int m_maxLines;
+  unsigned int m_maxLines;
 
   bool m_logPid;
   bool m_logTime;
