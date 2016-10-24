@@ -5,7 +5,9 @@
 #include <map>
 #include <string>
 
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 
 namespace NTrace
 {
@@ -34,8 +36,10 @@ private:
   bool m_logTime;
   bool m_logToStdout;
 
+#ifndef _WIN32
   struct timeval m_startTime;
-
+#endif
+  
   std::string makePrefix ();
 
 protected:

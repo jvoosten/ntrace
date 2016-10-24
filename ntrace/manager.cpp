@@ -1,10 +1,17 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <fstream>
 #include <iostream>
 #ifdef HAVE_STDIO_H
-#include <stdio.h>
+  #include <stdio.h>
 #endif
 #include <sys/types.h>
-#include <unistd.h>
+#if defined(_WIN32)
+  #define snprintf _snprintf
+  #define getpid() 0
+#else
+  #include <unistd.h>
+#endif
 
 #include "manager.h"
 #include "module.h"
@@ -31,7 +38,9 @@ Manager::Manager ()
   pidbuf[19] = '\0';
   snprintf (pidbuf, 20, "(%5d)", getpid ());
   m_pidString = pidbuf;
+#ifndef _WIN32
   gettimeofday (&m_startTime, 0);
+#endif
 }
 
 Manager::~Manager ()
@@ -328,6 +337,7 @@ std::string Manager::makePrefix ()
     {
       ret += m_pidString;
     }
+#ifndef _WIN32
     if (m_logTime)
     {
       char timebuf[20];
@@ -344,6 +354,7 @@ std::string Manager::makePrefix ()
       snprintf (timebuf, 20, "[%4d.%03d]", sec, usec / 1000);
       ret += timebuf;
     }
+#endif
     ret += " ";
   }
   return ret;

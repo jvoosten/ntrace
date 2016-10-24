@@ -1,10 +1,15 @@
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdarg.h>
 #include <stdio.h>
 
 #include "manager.h"
 #include "module.h"
 
-
+#ifdef _WIN32
+  #define snprintf _snprintf
+#endif
+  
 /**
  \class Module
   The tracemodule is the object that gets instantiated in your source file.

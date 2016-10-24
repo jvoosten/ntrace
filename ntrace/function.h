@@ -20,7 +20,11 @@ public:
   ~Function();
 
   void operator ()();
+#if defined(__GCC__) && (__GCC__ >= 4)
   void operator ()(const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+#else
+  void operator ()(const char *fmt, ...);
+#endif
 
 private:
   Module *m_trace_module;

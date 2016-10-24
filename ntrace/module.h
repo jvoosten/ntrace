@@ -26,11 +26,17 @@ public:
   void enter (const std::string &file_name, int line_number);
   void leave (const std::string &function_name);
   void leave (const std::string &file_name, int line_number);
+#if defined(__GCC__) && (__GCC__ >= 4)
   void log (int level, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
-  void log (int level, const std::string &msg);
   void error (const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
-  void error (const std::string &msg);
   void out (const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+#else
+  void log (int level, const char *fmt, ...);
+  void error (const char *fmt, ...);
+  void out (const char *fmt, ...);
+#endif
+  void log (int level, const std::string &msg);
+  void error (const std::string &msg);
   void out (const std::string &msg);
 
   void incLevel ();

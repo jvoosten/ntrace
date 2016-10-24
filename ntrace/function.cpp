@@ -47,6 +47,9 @@
 
  */
 
+// stop complaining about _vsnprintf. The other ones aren't any more secure than this.
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdarg.h>
 #include <stdio.h>
 
