@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+  <head>
+    <title>NTrace macros</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="ntrace.css">
+  </head>
+  <body>
+    <div class="nav">
+      <span class="up"><a href="index.html">Home</a></span>
+      <br clear="all">
+    </div>
+
+    <h2>Explanation of macros</h2>
+
+    <p><em>Note:</em> The example 'logger.hh' file in the package is meant as an example, but it is
+      working. You can change it to your liking or wrap the NTrace calls into objects of your own.
+    </p>
+
+    <p><b>TR_MODULE(<i>name</i>)</b> is mandatory for any file that contains NTrace macros; it contains the name
+      of the module as a string. This module name is used to select the module debug level; multiple files
+      may belong to the same module but all files will use the same debug level. TR_MODULE can be
+      used only once per source file.</p>
+
+    <p><b>TR_FUNC(<i>format [, param [, param, ...]]</i>)</b> keeps track of function calls. It does so by defining an object
+      within the function that is automatically created and destroyed upon enter and leave.
+      The full function name is printed in the tracing output, including optional parameters
+      as show in the MandelBrot constructor. The <i>format</i> uses regular C-style syntax using %d, %s, etc.
+      It is possible to call TR_FUNC without any parameters.
+      <br/>
+      Nested function calls are shown indented in the debug output, making it easy to see where a
+      function starts and ends.</p>
+
+    <p><b>TR(<i>level, format [, param [, param, ...]]</i>)</b> is the real debugging workhorse.
+      It has at least 2 parameters, a debug level
+      and a format specifier, followed by any required variables. The debug level in TR()
+      is fixed during compilation; the higher the number, the more detailed the information
+      should be (note the difference between calculateAll() and calculateLine() in the
+      <a href="example.html">example</a>). At runtime
+      it is determined if output should be printed or not; if the module debug
+      level is higher or equal than the level in TR(), output is produced.<br />
+
+      Note that if the module debug level is lower than the TR() level, there is still
+      overhead for calling the NTrace library functions.</p>
+
+    <p><b>TR_ERR(<i>format[, param [, param ...]]</i>)</b> is a macro that will always print a message to stderr,
+      even in release mode. It is also logged to the log stream but prefixed with a '!'.
+      This macro should be used for severe and/or fatal errors.</p>
+
+
+    <p><b>TR_OUT(<i>format[, param [, param ...]]</i>)</b> outputs data to stdout, but only in debug mode. It
+      is not redirected to the logging output.</p>
+
+    <p><b>TR_READ_CONFIG(<i>stream</i>)</b> reads the configuration from the given stream; this must be of
+        type std::istream and already opened.</p>
+    
+    <p><b>TR_WRITE_CONFIG(<i>stream</i>)</b> writes the configuration to the given stream; this must be
+      of type std::ostream and already opened.</p>
+    
+    <p><b>TR_SET_LOG(<i>stream</i>)</b> has 2 variants; if you supply a std::string for <i>stream</i>, NTrace
+      will create a file with the given name and write any subsequent logging to it. If, on the other hand you
+      supply a std::ostream pointer, it will use that for the output (so the output can be redirected almost
+      anywhere).</p>
+
+    <p><b>TR_SHUTDOWN</b> deletes the NTrace instance and closes all logging streams.</p>
+    
+    <p><b>TR_LOG_PID(<i>boolean</i>)</b> if the boolean argument is true, the process ID is printed in the log
+      output, placed between parenthesis.</p>
+    
+    <p><b>TR_LOG_TIME(<i>boolean</i>)</b> if the boolean argument is true, the time offset since start of the
+      program (actually, the first call to any of the NTrace functions) is printed between brackets []. The
+      time is printed as seconds + milliseconds.</p>
+
+
+    <p>Three things to remember:</p>
+    <ul>
+      <li>Use a trailing semicolon (;) after each macro.</li>
+      <li>Parenthesis are required, even if there are no parameters.</li>
+      <li>A linefeed is automatically added to each debug message.</li>
+    </ul>
+
+
+
+
+  </body>
+</html>
