@@ -82,6 +82,12 @@ void Manager::decIndent ()
 
 // public
 
+/**
+ \brief Return NTrace manager object.
+
+ This returns the single object that manages the tracing. The object is created
+ if if does not exist yet.
+ */
 Manager *Manager::instance ()
 {
   if (s_pTraceManager == 0)
@@ -89,6 +95,19 @@ Manager *Manager::instance ()
     s_pTraceManager = new Manager ();
   }
   return s_pTraceManager;
+}
+
+/**
+ \brief Destroy NTrace manager object.
+
+ Deletes the singleton object.
+
+ \note Write the configuration before destroying the object.
+ */
+void Manager::destroy ()
+{
+  delete s_pTraceManager;
+  s_pTraceManager = 0;
 }
 
 Module *Manager::registerModule (const std::string &module_name, int initial_value)

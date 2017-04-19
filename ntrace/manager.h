@@ -39,7 +39,7 @@ private:
 #ifndef _WIN32
   struct timeval m_startTime;
 #endif
-  
+
   std::string makePrefix ();
 
 protected:
@@ -52,6 +52,8 @@ public:
   ~Manager ();
 
   static Manager *instance ();
+  static void destroy ();
+  
   Module *registerModule (const std::string &module_name, int initial_value = 1);
 
   void setLogPid (bool b);
