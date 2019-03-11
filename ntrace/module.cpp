@@ -25,11 +25,17 @@ using namespace NTrace;
   \param name The name of the module
   \param level Initial level
  */
-Module::Module (Manager *mgr, const std::string &name, int level)
+Module::Module (IManager *mgr, const std::string &name, int level)
+  :IInput (mgr)
 {
   m_manager = mgr;
   m_moduleName = name;
   m_level = level;
+}
+
+IManager *Module::getManager () const
+{
+  return m_manager;
 }
 
 std::string Module::getName () const
@@ -42,6 +48,7 @@ int Module::getLevel () const
   return m_level;
 }
 
+#if 0
 /**
   \brief Log function enter point
 
@@ -131,6 +138,8 @@ void Module::leave (const std::string &file_name, int line_number)
   leave (file_name.substr (sep + 1) + ":" + bf);
 }
 
+#endif
+
 /**
  \brief Log message with printf() style formatting
  \param level Desired log level
@@ -141,6 +150,7 @@ void Module::leave (const std::string &file_name, int line_number)
  */
 void Module::log (int level, const char *fmt, ...)
 {
+  Message message;
   va_list args;
 
   if (level > m_level)
@@ -155,7 +165,11 @@ void Module::log (int level, const char *fmt, ...)
   vsnprintf (m_buffer, 2048, fmt, args);
 #endif
   va_end (args);
-  m_manager->log (m_buffer);
+
+  message.level = level;
+  message.type = Message::Normal;
+  message.message = m_buffer;
+  m_manager->pushMessage (message);
 }
 
 /**
@@ -168,10 +182,15 @@ void Module::log (int level, const char *fmt, ...)
  */
 void Module::log (int level, const std::string &msg)
 {
+  Message message;
+
   if (level > m_level)
     return;
 
-  m_manager->log (msg);
+  message.level = level;
+  message.type = Message::Normal;
+  message.message = msg;
+  m_manager->pushMessage (message);
 }
 
 /**
@@ -185,6 +204,7 @@ void Module::log (int level, const std::string &msg)
  */
 void Module::error (const char *fmt, ...)
 {
+  Message message;
   va_list args;
 
   va_start (args, fmt);
@@ -194,7 +214,10 @@ void Module::error (const char *fmt, ...)
   vsnprintf (m_buffer, 2048, fmt, args);
 #endif
   va_end (args);
-  m_manager->error (m_buffer);
+
+  message.type = Message::Error;
+  message.message = m_buffer;
+  m_manager->pushMessage (message);
 }
 
 /**
@@ -202,7 +225,11 @@ void Module::error (const char *fmt, ...)
  */
 void Module::error (const std::string &msg)
 {
-  m_manager->error (msg);
+  Message message;
+
+  message.type = Message::Error;
+  message.message = msg;
+  m_manager->pushMessage (message);
 }
 
 /**
@@ -215,6 +242,7 @@ void Module::error (const std::string &msg)
  */
 void Module::out (const char *fmt, ...)
 {
+  Message message;
   va_list args;
 
   va_start (args, fmt);
@@ -224,13 +252,19 @@ void Module::out (const char *fmt, ...)
   vsnprintf (m_buffer, 2048, fmt, args);
 #endif
   va_end (args);
-  m_manager->out (m_buffer);
 
+  message.type = Message::Out;
+  message.message = m_buffer;
+  m_manager->pushMessage (message);
 }
 
 void Module::out (const std::string &msg)
 {
-  m_manager->out (msg);
+  Message message;
+
+  message.type = Message::Out;
+  message.message = msg;
+  m_manager->pushMessage (message);
 }
 
 void Module::incLevel ()

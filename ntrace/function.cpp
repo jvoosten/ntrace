@@ -54,7 +54,7 @@
 #include <stdio.h>
 
 #include "function.h"
-#include "module.h"
+#include "interfaces.h"
 
 using namespace NTrace;
 
@@ -74,7 +74,7 @@ using namespace NTrace;
   to supply arguments.
 
  */
-Function::Function (Module *trace_module, const char *funcname)
+Function::Function (IInput *trace_module, const char *funcname)
 {
   m_trace_module = trace_module;
   m_function_name = funcname;
@@ -92,7 +92,12 @@ void Function::operator ()()
 {
   if (m_trace_module)
   {
-    m_trace_module->enter (m_function_name);
+    Message msg;
+
+    msg.module = m_trace_module;
+    msg.type = Message::Entry;
+    msg.message = m_function_name;
+    m_trace_module->getManager()->pushMessage (msg);
     m_logged = true;
   }
 }
@@ -104,6 +109,7 @@ void Function::operator ()(const char *fmt, ...)
 {
   if (m_trace_module)
   {
+    Message msg;
     va_list args;
     char LargeBuffer[2050];
 
@@ -114,8 +120,14 @@ void Function::operator ()(const char *fmt, ...)
     vsnprintf (LargeBuffer, 2048, fmt, args);
 #endif
     va_end (args);
-    
-    m_trace_module->enter (m_function_name, LargeBuffer);
+
+    msg.module = m_trace_module;
+    msg.type = Message::Entry;
+    msg.message = m_function_name;
+    msg.message += " (";
+    msg.message += LargeBuffer;
+    msg.message += ")";
+    m_trace_module->getManager ()->pushMessage (msg);
   }
   m_logged = true;
 }
@@ -124,13 +136,22 @@ Function::~Function ()
 {
   if (m_trace_module)
   {
+    Message msg;
     if (m_logged)
     {
-      m_trace_module->leave (m_function_name);
+      msg.module = m_trace_module;
+      msg.type = Message::Exit;
+      msg.message = m_function_name;
+      m_trace_module->getManager ()->pushMessage (msg);
     }
     else
     {
-      m_trace_module->log (0, "!! " + m_function_name + " has malformed TR_FUNC macro!");
+      msg.module = m_trace_module;
+      msg.type = Message::Error;
+      msg.message = "!! ";
+      msg.message += m_function_name;
+      msg.message += " has malformed TR_FUNC macro!";
+      m_trace_module->getManager ()->pushMessage (msg);
     }
   }
 }

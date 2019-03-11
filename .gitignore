@@ -21,3 +21,9 @@ compile
 *.o
 *.lo
 *.la
+
+*.vcxproj.user
+*.sln
+.vs
+Debug
+Release

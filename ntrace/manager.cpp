@@ -6,60 +6,45 @@
   #include <stdio.h>
 #endif
 #include <sys/types.h>
-#if defined(_WIN32)
-  #define snprintf _snprintf
-  #define getpid() 0
-#else
-  #include <unistd.h>
-#endif
+
+#include <chrono>
 
 #include "manager.h"
 #include "module.h"
 
+#include "debug_output.h"
+
 using namespace NTrace;
 
-static Manager *s_pTraceManager = 0;
+static Manager *s_traceManager = 0;
 
 /***************************************************************************/
 
+
 Manager::Manager ()
 {
-  m_indent = 0;
-  m_mute = false;
-  m_ownLogStream = false;
-  m_logStream = 0;
-  m_maxLines = 0;
-
-  m_logPid = true;
-  m_logTime = false;
-  m_logToStdout = true;
-
-  char pidbuf[20];
-  pidbuf[19] = '\0';
-  snprintf (pidbuf, 20, "(%5d)", getpid ());
-  m_pidString = pidbuf;
-#ifndef _WIN32
-  gettimeofday (&m_startTime, 0);
-#endif
+  m_endLoop = false;
 }
 
 Manager::~Manager ()
 {
-  s_pTraceManager = 0;
-  if (m_ownLogStream && m_logStream)
+  // Stop thread
+  stop ();
+  // Clean up modules
+  for (modules_list::iterator it = m_modules.begin (); it != m_modules.end (); ++it)
   {
-    delete m_logStream;
-    m_logStream = 0;
+    delete it->second;
   }
+  m_modules.clear ();
+  // output modules are shared_ptr so automatically cleaned up
 }
 
-// private
 
 
 
 
 // protected
-
+#if 0
 void Manager::incIndent ()
 {
   m_indent++;
@@ -76,7 +61,7 @@ void Manager::decIndent ()
     m_indentString.resize (m_indent * 2, ' ');
   }
 }
-
+#endif
 
 
 
@@ -87,14 +72,16 @@ void Manager::decIndent ()
 
  This returns the single object that manages the tracing. The object is created
  if if does not exist yet.
+
+ Note that the definition is in the IManager interface, but implemented here.
  */
-Manager *Manager::instance ()
+IManager *IManager::instance ()
 {
-  if (s_pTraceManager == 0)
+  if (s_traceManager == 0)
   {
-    s_pTraceManager = new Manager ();
+    s_traceManager = new Manager ();
   }
-  return s_pTraceManager;
+  return s_traceManager;
 }
 
 /**
@@ -104,22 +91,32 @@ Manager *Manager::instance ()
 
  \note Write the configuration before destroying the object.
  */
-void Manager::destroy ()
+void IManager::destroy ()
 {
-  delete s_pTraceManager;
-  s_pTraceManager = 0;
+  delete s_traceManager;
+  s_traceManager = 0;
 }
 
-Module *Manager::registerModule (const std::string &module_name, int initial_value)
+/**
+\brief Get/create a new module
+\param module_name Module name; unique per program
+\param initial_log_level
+
+
+Creates a new module or returns an existing one with the same name. The modulename
+is a string you supply to identify the module; if multiple files belong to the same
+module use the same name (case sensitive). 
+*/
+IInput *Manager::registerModule (const std::string &module_name, int initial_log_level)
 {
   Module *mod = 0;
   modules_list::iterator mit;
 
+  std::lock_guard<std::mutex> lock (m_modulesMutex);
   mit = m_modules.find (module_name);
   if (mit == m_modules.end ())
   {
-    mod = new Module (this, module_name, initial_value);
-
+    mod = new Module (this, module_name, initial_log_level);
     m_modules[module_name] = mod;
   }
   else
@@ -128,6 +125,140 @@ Module *Manager::registerModule (const std::string &module_name, int initial_val
   }
   return mod;
 }
+
+
+std::list<std::weak_ptr<IOutput>> Manager::getOutputs ()
+{
+  std::list<std::weak_ptr<IOutput>> ret;
+  // Make copy of the list
+  std::lock_guard<std::mutex> lock (m_outputsMutex);
+  for (std::list<output_ptr>::iterator it = m_outputs.begin (); it != m_outputs.end (); ++it)
+  {
+    ret.push_back (*it);
+  }
+  return ret;
+}
+
+void Manager::addOutput (IOutput *out)
+{
+  std::shared_ptr<IOutput> ptr;
+  ptr.reset (out);
+  std::lock_guard<std::mutex> lock (m_outputsMutex);
+  m_outputs.push_back (ptr);
+  start (); // start output loop if not already busy
+}
+
+void Manager::removeOutput (IOutput *out)
+{
+  std::lock_guard<std::mutex> lock (m_outputsMutex);
+  std::list<output_ptr>::iterator it = m_outputs.begin ();
+  while (it != m_outputs.end ())
+  {
+    if ((*it).get () == out)
+    {
+      it = m_outputs.erase (it);
+    }
+    else
+    {
+      ++it;
+    }
+  }
+}
+
+
+/**
+\brief Push message to list
+*/
+void Manager::pushMessage (const Message &msg)
+{
+  // Just a quick lock
+  m_messagesMutex.lock ();
+  m_messages.push_back (msg);
+  // Check if our queue gets too big; prune old messages
+  if (m_messages.size () > 1000)
+  {
+    m_messages.pop_front ();
+  }
+  m_messagesMutex.unlock ();
+  // Wake up any waiting output
+  m_messagesAvailable.notify_all ();
+}
+
+
+
+
+void Manager::enableDebugOutput ()
+{
+  // Create 
+  addOutput (new DebugOutput (m_startTime));
+}
+
+
+
+/**
+\brief Start output thread
+
+*/
+void Manager::start ()
+{
+  if (!m_outputThread.joinable())
+  {
+    m_endLoop = false;
+    m_outputThread = std::thread (&Manager::outputLoop, this);
+  }
+}
+
+/**
+\brief End output thread
+
+Waits for the thread to finish.
+*/
+
+void Manager::stop ()
+{
+  if (m_outputThread.joinable () && !m_endLoop)
+  {
+    m_endLoop = true;
+    m_outputThread.join ();
+  }
+}
+
+
+
+/**
+\brief Background thread to write messages
+*/
+void Manager::outputLoop ()
+{
+  std::unique_lock<std::mutex> lock (m_messagesMutex);
+  while (!m_endLoop)
+  {
+    // Wait until there are messages available.
+    m_messagesAvailable.wait (lock);
+
+    // Do not allow manipulation of outputs while we are processing messages
+    m_outputsMutex.lock ();
+    while (!m_messages.empty ())
+    {
+      Message msg = m_messages.front ();
+      m_messages.pop_front ();
+      // Unlock the messages queue for writing 
+      m_messagesMutex.unlock ();
+
+      // We have our message, we can now (slowly) process it
+      for (std::list<output_ptr>::iterator it = m_outputs.begin (); it != m_outputs.end (); ++it)
+      {
+        (*it)->saveMessage (msg);
+      }
+      // Re-lock because condition_variable expects that
+      m_messagesMutex.lock ();
+    }
+    m_outputsMutex.unlock ();
+  }
+}
+
+
+#if 0
 
 /**
  \brief Set output logstream
@@ -239,6 +370,7 @@ void Manager::out (const std::string &out_string)
 {
   std::cout << makePrefix () << out_string << std::endl;
 }
+#endif
 
 /**
   \brief Read configuration from stream
@@ -259,6 +391,7 @@ void Manager::readConfiguration (std::istream &str)
   {
     str >> modname >> level;
 
+#if 0
     if ("_logPid" == modname)
     {
       m_logPid = (level > 0);
@@ -268,6 +401,7 @@ void Manager::readConfiguration (std::istream &str)
       m_logTime = (level > 0);
     }
     else
+#endif
     {
       mit = m_modules.find (modname);
       if (mit != m_modules.end ())
@@ -311,8 +445,8 @@ void Manager::writeConfiguration (std::ostream &str)
     mod = (*mit).second;
     str << mod->getName () << " " << mod->getLevel () << std::endl;
   }
-  str << "_logPid" << " " << (int) (m_logPid ? 1 : 0) << std::endl;
-  str << "_logTime" << " " << (int) (m_logTime ? 1 : 0) << std::endl;
+  //str << "_logPid" << " " << (int) (m_logPid ? 1 : 0) << std::endl;
+  //str << "_logTime" << " " << (int) (m_logTime ? 1 : 0) << std::endl;
 }
 
 void Manager::writeConfiguration (const std::string &filename)
@@ -323,6 +457,7 @@ void Manager::writeConfiguration (const std::string &filename)
   tracer.close ();
 }
 
+#if 0
 void Manager::clearText ()
 {
   m_loggedText.clear ();
@@ -378,3 +513,8 @@ std::string Manager::makePrefix ()
   }
   return ret;
 }
+#endif
+
+
+
+
