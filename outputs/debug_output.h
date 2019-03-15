@@ -1,7 +1,8 @@
 #pragma once
 
 
-#include "interfaces.h"
+#include "../ntrace/interfaces.h"
+#include "../ntrace/output_base.h"
 
 namespace NTrace
 {
@@ -10,16 +11,18 @@ namespace NTrace
 /**
 \brief Write message to default debug output
 
+Formats string nicely, with process id, relative time and indented function calls.
 
+getName() returns the fixed string "ntrace.debug_output".
 
 */
-class DebugOutput: public IOutput
+class DebugOutput: public OutputBase
 {
 public:
+  DebugOutput ();
   DebugOutput (const Timestamp &start_time);
   ~DebugOutput ();
 
-  virtual std::string NTRACE_CALL getName () const;
   virtual void NTRACE_CALL saveMessage (const Message &msg);
 
 private:

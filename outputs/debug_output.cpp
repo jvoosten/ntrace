@@ -1,32 +1,33 @@
-#include <iomanip>
-#include <iostream>
-#include <sstream>
-
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
+
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #include "debug_output.h"
 
 
 using namespace NTrace;
 
-DebugOutput::DebugOutput (const Timestamp &start_time)
-  :IOutput (start_time)
+DebugOutput::DebugOutput ()
+  : OutputBase("ntrace.debug_output")
 {
   m_indent = 0;
 }
+
+DebugOutput::DebugOutput (const Timestamp &start_time)
+  : OutputBase ("ntrace.debug_output", start_time)
+{
+  m_indent = 0;
+}
+
 
 DebugOutput::~DebugOutput ()
 {
 
 }
-
-std::string DebugOutput::getName () const 
-{
-  return "ntrace.debugoutput";
-}
-
 
 void DebugOutput::saveMessage (const Message &msg)
 {

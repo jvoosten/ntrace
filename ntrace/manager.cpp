@@ -10,9 +10,8 @@
 #include <chrono>
 
 #include "manager.h"
-#include "module.h"
-
-#include "debug_output.h"
+#include "inputs/module.h"
+#include "outputs/debug_output.h"
 
 using namespace NTrace;
 
@@ -39,29 +38,6 @@ Manager::~Manager ()
   // output modules are shared_ptr so automatically cleaned up
 }
 
-
-
-
-
-// protected
-#if 0
-void Manager::incIndent ()
-{
-  m_indent++;
-  m_indentString.clear ();
-  m_indentString.resize (m_indent * 2, ' ');
-}
-
-void Manager::decIndent ()
-{
-  if (m_indent > 0)
-  {
-    m_indent--;
-    m_indentString.clear ();
-    m_indentString.resize (m_indent * 2, ' ');
-  }
-}
-#endif
 
 
 
@@ -95,6 +71,15 @@ void IManager::destroy ()
 {
   delete s_traceManager;
   s_traceManager = 0;
+}
+
+
+/**
+\brief Return initial timestamp of tracing
+*/
+Timestamp Manager::getStartTimestamp () const
+{
+  return m_startTime;
 }
 
 /**

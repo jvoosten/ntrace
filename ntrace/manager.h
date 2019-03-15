@@ -36,7 +36,9 @@ public:
   Manager ();
   ~Manager ();
 
-  IInput * NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level);
+  virtual Timestamp NTRACE_CALL getStartTimestamp () const;
+
+  virtual IInput * NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level);
 
   virtual std::list<std::weak_ptr<IOutput>> NTRACE_CALL getOutputs ();
   virtual void NTRACE_CALL addOutput (IOutput *out);
@@ -67,8 +69,6 @@ public:
 
 protected:
 
-//  void incIndent ();
-//  void decIndent ();
   void start ();
   void stop ();
 
@@ -97,8 +97,6 @@ private:
 
   //bool m_mute;
 
-  //int m_indent;
-  //std::string m_indentString;
   //std::string m_pidString;
   //std::deque<std::string> m_loggedText;
   //unsigned int m_maxLines;
@@ -108,8 +106,6 @@ private:
   //bool m_logToStdout;
 
   Timestamp m_startTime;
-
-//  std::string makePrefix ();
 };
 
 } // namespace

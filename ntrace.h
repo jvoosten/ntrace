@@ -3,7 +3,9 @@
 
 #include "ntrace/interfaces.h"
 #include "ntrace/function.h"
-#include "ntrace/module.h"
+
+#include "outputs/debug_output.h"
+#include "outputs/file_output.h"
 
 // Define this macro in your project settings to enable the full set of TR macros.
 // This should normally only be done for your debug build

@@ -13,7 +13,7 @@ class IInput;
   \brief Helper class to automatically log enter and leave events
 
   By creating a Function object inside your function, entry and exit messages are
-  automatically generated (due to the wonders of OOP programming and destructors);
+  automatically generated (due to the wonders of OOP programming and destructors).
 */
 
 class Function

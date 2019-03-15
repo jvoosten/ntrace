@@ -107,21 +107,6 @@ public:
   a window.
   */
   virtual void NTRACE_CALL saveMessage (const Message &msg) = 0;
-
-protected:
-  /**
-  \brief Constructor for IOutput
-  \param start_time First timestamp registered for manager (for relative timestamps)
-
-  Only initializes the variables.
-  */
-  IOutput (const Timestamp &start_time)
-    : m_startTime (start_time)
-  {
-  };
-
-  /// First timestamap of manager
-  const Timestamp m_startTime;
 };
 
 
@@ -146,6 +131,7 @@ public:
   static IManager * NTRACE_CALL instance () ;
   static void NTRACE_CALL destroy ();
 
+  virtual Timestamp NTRACE_CALL getStartTimestamp () const = 0;
 
   virtual IInput * NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level = NTrace::Notice) = 0;
 

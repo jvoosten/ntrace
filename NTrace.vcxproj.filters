@@ -13,6 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
+    <Filter Include="Header Files\Inputs">
+      <UniqueIdentifier>{445a879d-c094-4098-8749-24b315273aef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Outputs">
+      <UniqueIdentifier>{caa131d1-cd4e-4378-be65-0701f015bbcf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Inputs">
+      <UniqueIdentifier>{4cb28dd9-1588-405e-bba2-79339030f12c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Outputs">
+      <UniqueIdentifier>{eb15d297-4970-4bd5-a620-0b53f8fc8058}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Documentation">
+      <UniqueIdentifier>{cb9b9507-0e43-4093-8c6d-880e541f8768}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ntrace\function.cpp">
@@ -21,16 +36,22 @@
     <ClCompile Include="ntrace\manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ntrace\module.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ntrace\timestamp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ntrace\message.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="ntrace\debug_output.cpp">
+    <ClCompile Include="inputs\module.cpp">
+      <Filter>Source Files\Inputs</Filter>
+    </ClCompile>
+    <ClCompile Include="outputs\debug_output.cpp">
+      <Filter>Source Files\Outputs</Filter>
+    </ClCompile>
+    <ClCompile Include="outputs\file_output.cpp">
+      <Filter>Source Files\Outputs</Filter>
+    </ClCompile>
+    <ClCompile Include="ntrace\output_base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -44,9 +65,6 @@
     <ClInclude Include="ntrace\manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ntrace\module.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="ntrace\interfaces.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -56,17 +74,34 @@
     <ClInclude Include="ntrace\timestamp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ntrace\debug_output.h">
+    <ClInclude Include="ntrace\ntrace_exports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="ntrace\ntrace_exports.h">
+    <ClInclude Include="inputs\module.h">
+      <Filter>Header Files\Inputs</Filter>
+    </ClInclude>
+    <ClInclude Include="outputs\debug_output.h">
+      <Filter>Header Files\Outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="outputs\file_output.h">
+      <Filter>Header Files\Outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="ntrace\output_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="doc\example.html" />
-    <None Include="doc\index.html" />
-    <None Include="doc\installation.html" />
-    <None Include="doc\macros.html" />
+    <None Include="doc\example.html">
+      <Filter>Documentation</Filter>
+    </None>
+    <None Include="doc\index.html">
+      <Filter>Documentation</Filter>
+    </None>
+    <None Include="doc\installation.html">
+      <Filter>Documentation</Filter>
+    </None>
+    <None Include="doc\macros.html">
+      <Filter>Documentation</Filter>
+    </None>
   </ItemGroup>
 </Project>

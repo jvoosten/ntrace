@@ -3,7 +3,7 @@
 #include <stdarg.h>
 #include <stdio.h>
 
-#include "manager.h"
+#include "ntrace/manager.h"
 #include "module.h"
 
 #ifdef _WIN32
