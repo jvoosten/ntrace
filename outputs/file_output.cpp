@@ -8,7 +8,16 @@
 #include <map>
 #include <sstream>
 #include <stdio.h>
+#include <string>
 #include <time.h>
+
+#if defined(__GNUC__)
+#include <dirent.h>
+#include <fnmatch.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#endif
 
 #include "file_output.h"
 
@@ -16,12 +25,13 @@ using namespace NTrace;
 
 #if defined(_WIN32)
 #define DIR_SEPARATOR   '\\'
+static const int eof_len = 2;
 #elif defined (__GNUC__)
 #define DIR_SEPARATOR   '/'
+static const int eof_len = 1;
 #else
 #error System not supported.
 #endif
-
 
 /**
 \brief FileOutput constructor
@@ -42,14 +52,25 @@ is also set, old files will be purged at that moment.
 Specifying \p max_number_of_files without a \p max_file_size is possible but pointless.
 
 getName() returns the fixed string "ntrace.file_output".
-*/
+ */
 FileOutput::FileOutput (const std::string &basename, const std::string &extension, unsigned int max_file_size, int max_number_of_files)
-  : OutputBase("ntrace.file_output"), 
+  : OutputBase ("ntrace.file_output"),
   m_fileBasename (basename), m_fileExtension (extension), m_maximumFilesize (max_file_size), m_maximumNumberOfFiles (max_number_of_files)
 {
+  // extract directory part of basename (including directory separator)
+  size_t slash_pos = m_fileBasename.find_last_of (DIR_SEPARATOR);
+  if (std::string::npos != slash_pos)
+  {
+    m_dirBasename = m_fileBasename.substr (0, slash_pos);
+  }
+  else
+  {
+    m_dirBasename = ".";
+  }
+  m_dirBasename += DIR_SEPARATOR;
+
   m_currentFileSize = 0;
 }
-
 
 void FileOutput::saveMessage (const Message &msg)
 {
@@ -64,7 +85,7 @@ void FileOutput::saveMessage (const Message &msg)
   // Format string
   std::ostringstream buf;
   const int timebuf_len = 25;
-  char timebuf[timebuf_len] = { '\0' };
+  char timebuf[timebuf_len] = {'\0'};
   struct tm *when = 0;
   time_t st = 0;
 
@@ -86,11 +107,12 @@ void FileOutput::saveMessage (const Message &msg)
     buf << timebuf << "] ";
   }
 
-  // Finish buffer, including line-end
-  buf << msg.message << std::endl;
+  // Finish buffer
+  buf << msg.message;
 
-  // Check filesize
-  m_currentFileSize += buf.str ().length (); // will be reset in rotateOutputStream
+  // Update filesize (will be reset in rotateOutputStream)
+  m_currentFileSize += buf.str ().length (); 
+  m_currentFileSize += eof_len;
   if (m_maximumFilesize > 0 &&
     m_currentFileSize > m_maximumFilesize)
   {
@@ -101,16 +123,14 @@ void FileOutput::saveMessage (const Message &msg)
     }
   }
 
-  // Hmm, do we need std::flush as well?
-  m_outStream << buf.str ();
+  m_outStream << buf.str () << std::endl;
 }
-
 
 /**
   \brief Try to open the log file
 
 
-*/
+ */
 bool FileOutput::openOutputStream ()
 {
   m_currentFilename = m_fileBasename + m_fileExtension;
@@ -136,21 +156,32 @@ bool FileOutput::openOutputStream ()
     m_currentFileSize = large.LowPart;
     CloseHandle (hf);
   }
-#else if defined(__GNUC__)
-  // use stat
+#elif defined(__GNUC__)
+  // use POSIX stat
+
+  struct stat file_stat;
+  if (stat (m_currentFilename.c_str (), &file_stat) < 0)
+  {
+    // does not exist
+    m_currentFileSize = 0;
+  }
+  else
+  {
+    m_currentFileSize = file_stat.st_size;
+  }
+
 #endif
 
   m_outStream.open (m_currentFilename, std::ios_base::out | std::ios_base::app | std::ios_base::ate);
   return m_outStream.is_open ();
 }
 
-
 /**
 \brief Create new output file and rotate logs
 
 Closes the current output file, renames it, then purges old log files and
 reopens the output file.
-*/
+ */
 bool FileOutput::rotateOutputStream ()
 {
   std::string new_name;
@@ -161,7 +192,6 @@ bool FileOutput::rotateOutputStream ()
   {
     m_outStream.close ();
   }
-
 
   time_t now;
   struct tm *now_tm;
@@ -190,17 +220,18 @@ bool FileOutput::rotateOutputStream ()
   return openOutputStream ();
 }
 
-
 /**
 \brief Check for logfiles based on the basename and remove older ones
 
 Note: files are removed based on age, not on name.
-*/
+ */
 void FileOutput::checkAndPurgeLogfiles ()
 {
-  std::string pattern;
+  // Mapping from ftimestamp to filename; this automatically orders the entries.
   std::map<time_t, std::string> m_fileTimes;
+  std::string pattern;
 
+  // Our pattern to match
   pattern = m_fileBasename + "*" + m_fileExtension;
 
 #if defined(_WIN32)
@@ -214,7 +245,8 @@ void FileOutput::checkAndPurgeLogfiles ()
     return;
   }
 
-  do {
+  do
+  {
     // store timestamp with filename. Convert FILETIME to time_t-ish
     ui.LowPart = data.ftCreationTime.dwLowDateTime;
     ui.HighPart = data.ftCreationTime.dwHighDateTime;
@@ -222,28 +254,45 @@ void FileOutput::checkAndPurgeLogfiles ()
     uint64_t us = ui.QuadPart / 10000000ULL;
     // Subtract epoch to reach Jan 1, 1970. 
     us -= 11644473600ULL;
+    // cFileName is only the filename part, not the full path.
     m_fileTimes[us] = data.cFileName;
-
   } while (FindNextFile (find, &data));
   FindClose (find);
 
 #elif defined (__GNUC__)
+  DIR *scan_dir = 0;
+  struct dirent *dir_entry = 0;
+  struct stat file_stat;
 
-#endif
-
-  // Extract directory part
-  size_t slash_pos = m_fileBasename.find_last_of (DIR_SEPARATOR);
-  std::string basedir;
-  if (std::string::npos != slash_pos)
+  scan_dir = opendir (m_dirBasename.c_str ());
+  if (NULL == scan_dir)
   {
-    basedir = m_fileBasename.substr (0, slash_pos + 1);
+    return;
   }
+
+  dir_entry = readdir (scan_dir);
+  while (NULL != dir_entry)
+  {
+    std::string t = m_dirBasename + dir_entry->d_name;
+    if (0 == fnmatch (pattern.c_str (), t.c_str(), FNM_FILE_NAME))
+    {
+      if (0 == stat (t.c_str (), &file_stat))
+      {
+        // use creation time for mapping
+        m_fileTimes[file_stat.st_ctime] = dir_entry->d_name;
+      }
+    }
+    // Read next entry
+    dir_entry = readdir (scan_dir);
+  };
+  closedir (scan_dir);
+#endif
 
   // Files should be stored sorted, accoring to the key (time_t)
   std::map<time_t, std::string>::iterator it = m_fileTimes.begin ();
   while (m_fileTimes.size () > m_maximumNumberOfFiles)
   {
-    remove ((basedir + it->second).c_str());
+    remove ((m_dirBasename + it->second).c_str ());
     it = m_fileTimes.erase (it);
   }
 }

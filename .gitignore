@@ -1,6 +1,7 @@
 .deps
 .libs
 .svn
+.dirstamp
 Makefile
 Makefile.in
 aclocal.m4

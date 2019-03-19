@@ -27,6 +27,7 @@ public:
   virtual void NTRACE_CALL saveMessage (const Message &msg);
 
 private:
+  std::string m_dirBasename;
   std::string m_fileBasename;
   std::string m_fileExtension;
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interfaces.h"
+#include "ntrace/interfaces.h"
 
 namespace NTrace
 {
