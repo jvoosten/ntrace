@@ -1,5 +1,12 @@
 ACLOCAL_AMFLAGS=-Im4
 
+if EXAMPLES
+SUBDIRS = . examples
+else
+SUBDIRS = .
+endif
+
+
 lib_LTLIBRARIES=libntrace.la
 
 # Versioning CURRENT:REVISION:AGE

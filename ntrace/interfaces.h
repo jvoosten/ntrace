@@ -129,7 +129,14 @@ public:
   of the real object. The interface is purely to separate implementation from DLL/so exports.
   */
   static IManager * NTRACE_CALL instance () ;
-  static void NTRACE_CALL destroy ();
+
+  /**
+   \brief Shutdown trace manager gracefully
+
+   Should be called just before the end of the main program, to orderly shutdown
+   the logging system and flush all messages.
+   */
+  static void NTRACE_CALL shutdown ();
 
   virtual Timestamp NTRACE_CALL getStartTimestamp () const = 0;
 

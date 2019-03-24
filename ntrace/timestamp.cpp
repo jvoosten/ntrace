@@ -1,10 +1,10 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
-#ifdef HAVE_CONFIG_H
+
 #ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
-#endif
+#include <unistd.h>
 #endif
 
 #include "timestamp.h"

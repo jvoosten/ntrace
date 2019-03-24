@@ -101,7 +101,7 @@ void FileOutput::saveMessage (const Message &msg)
   }
   else
   {
-    strftime (timebuf, timebuf_len, "%y-%m-%d %H:%M:%S", when);
+    strftime (timebuf, timebuf_len, "%Y-%m-%d %H:%M:%S", when);
     buf << "[" << timebuf << ".";
     snprintf (timebuf, timebuf_len, "%03d", msg.timestamp.getMillis ());
     buf << timebuf << "] ";

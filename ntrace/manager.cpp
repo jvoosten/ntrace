@@ -43,14 +43,7 @@ Manager::~Manager ()
 
 // public
 
-/**
- \brief Return NTrace manager object.
-
- This returns the single object that manages the tracing. The object is created
- if if does not exist yet.
-
- Note that the definition is in the IManager interface, but implemented here.
- */
+// Return object instance
 IManager *IManager::instance ()
 {
   if (s_traceManager == 0)
@@ -60,14 +53,8 @@ IManager *IManager::instance ()
   return s_traceManager;
 }
 
-/**
- \brief Destroy NTrace manager object.
-
- Deletes the singleton object.
-
- \note Write the configuration before destroying the object.
- */
-void IManager::destroy ()
+// Perform orderly cleanup
+void IManager::shutdown ()
 {
   delete s_traceManager;
   s_traceManager = 0;

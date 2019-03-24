@@ -3,14 +3,15 @@
 Ntrace is a small library to enable tracing and debugging of your code at the
 same time. In other words, it allows you to see which functions
 are called in which order, and also print debug information in between.
-It formats the output so that the call trace is easy to follow.
+The output is formatted so that the call trace is easy to follow.
 
 The library allows you to divide your code into modules and set the
 debug-level per module, thus only generating output for the parts you are
 interested in without having to insert/remove the debugging code all the time.
 
-To minimize its impact on performance, it is possible to completely disable
-tracing and debugging for your final release binaries.
+To minimize impact on performance it uses a separate thread to write the
+output. Using macros it is also possible to eliminate most (if not all) debugging
+for your release builds.
 
 # Features
 
@@ -19,8 +20,10 @@ tracing and debugging for your final release binaries.
 * Allows printf() style formatting
 * Traces function entry and exit automatically
 * Divide your code into modules, set debug level per module
-* Outputs to file, but critical errors are logged to stderr (even in release mode)
-* Optionally adds a timestamp and/or process ID
+* Outputs can be redirected to multiple outputs, but critical errors are logged to stderr (even in release mode)
+* Each log message is timestamped with millisecond precision, process and thread ID
+* Thread-safe
+* Available on Windows and Linux (other POSIX-like systems should work as well)
 
 # Sample output
 
@@ -62,3 +65,4 @@ Here's a sample of how to integrate Ntrace in your code:
       }
     }
 
+For more information, see the documentation in the doc/ directory.
