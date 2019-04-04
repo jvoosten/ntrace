@@ -1,8 +1,8 @@
 #pragma once
 
 
-#include "../ntrace/interfaces.h"
-#include "../ntrace/output_base.h"
+#include "../interfaces.h"
+#include "../output_base.h"
 
 namespace NTrace
 {

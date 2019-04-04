@@ -1,29 +1,64 @@
 <!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
 <html>
   <head>
-    <title>NTrace installation</title>
+    <title>Building and installing NTrace</title>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="ntrace.css">
   </head>
   <body>
-    <h2>Installation &amp; integration into your own program</h2>
+    <div id="content">
+      <h1>Building and installing NTrace</h1>
 
-    <h3>Requirements</h3>
+      <div class="nav">
+        <span class="up"><a href="index.html">Home</a></span>
+        <span class="next"><a href="example.html">Inside your code</a></span>
+        <br clear="all">
+      </div>
 
-    <ul>
-      <li>GCC 4.3 or higher</li>
-    </ul>
+      <p>NTrace is primarily developed on Linux with GCC (version 4.5 and higher) and Windows with Visual Studio (2017 and higher);
+        other compilers may work. The main requirement is a C++11 compatible compiler with an STL library that supports threads.</p>
 
-    ... build
+      <h2>Linux</h2>
 
-    ...autoconf
+      <p>Building on Linux follows the usual route, after you downloaded and unpacked the code, or cloned it from github:</p>
 
-    .. tweaking logger.hh
+      <cmds>
+$ ./configure [--enable-examples]
+$ make
+$ sudo make install
+      </cmds>
 
+      <p>By default both the shared and static library are built and installed in /usr/local/lib; header files are
+        installed in /usr/local/include and /usr/local/include/ntrace (there is one global header file, /usr/local/include/ntrace.h).</p>
+
+      <p>There is one option: <em>--enable-examples</em>; this will build some test and example code in the examples/ subdirectory.</p>
+
+      <p>Alternatively, you can include NTrace in your own project in a subdirectory and recursively call configure from
+        your main project file.</p>
+
+      <h2>Windows</h2>
+
+      <p>For Visual Studio there is a <strong>.vcxproj</strong> included in the package; this was generated using Visual Studio
+        2017. For newer versions of Visual Studio you may have to update the project file.</p>
+
+      <p>In order to add it to your project, add the .vcxproj file to your solution. Do not forget to
+        add it as a Build Dependency for your main project(s) and as a Reference (otherwise, the linker
+        will not try to link the library to your program).</p>
+
+      <p>The library is built as a DLL and cannot be made static because it uses a singleton object;
+        if other DLLs would link NTrace as a static library we would end up with multiple copies of that object.
+        This also means you must distribute NTRACE.DLL with your program.</p>
+
+      <h2>MingW</h2>
+
+      <p>There is no separate project for MingW but since NTrace uses autoconf and automake it <strong>should</strong>
+        work for MingW as well.</p>
+
+      <h2>Qt</h2>
+
+      <p>There was a Qt .pro file but that is currently not maintained.</p>
+
+    </div>
+    <footer>&copy; 2019 Bankai Software bv</footer>
   </body>
 </html>

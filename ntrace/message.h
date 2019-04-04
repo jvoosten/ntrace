@@ -20,9 +20,9 @@ struct Message
 {
 public:
   /// Pointer to the module that generated the message
-	const IInput *module;
+  const IInput *module;
   /// Log level (the higher, the less important); only relevant for 'Normal' messages
-	int level;
+  int level;
   /// The type of message
   enum Type {
     Normal,       // Regular log messages
@@ -32,7 +32,7 @@ public:
     Exit,         // Function exit messages
   } type;
   /// The message
-	std::string message;
+  std::string message;
   /// When the message was generated
   Timestamp timestamp;
   /// Process ID

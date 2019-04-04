@@ -2,8 +2,8 @@
 
 #include <fstream>
 
-#include "../ntrace/interfaces.h"
-#include "../ntrace/output_base.h"
+#include "../interfaces.h"
+#include "../output_base.h"
 
 namespace NTrace
 {
@@ -22,7 +22,7 @@ In addition you can restrict the number of log files; old logfiles are automatic
 class FileOutput : public OutputBase
 {
 public:
-  NTRACE_EXPORT FileOutput (const std::string &basename, const std::string &extension, unsigned int max_file_size = 0, int max_number_of_files = 0);
+  NTRACE_EXPORT FileOutput (const std::string &basename, const std::string &extension, unsigned int max_file_size = 0, int max_number_of_files = 0, char log_separator = '-');
 
   virtual void NTRACE_CALL saveMessage (const Message &msg);
 
@@ -30,6 +30,7 @@ private:
   std::string m_dirBasename;
   std::string m_fileBasename;
   std::string m_fileExtension;
+  char m_fileSeparator;
 
   unsigned int m_maximumFilesize;
   unsigned int m_maximumNumberOfFiles;

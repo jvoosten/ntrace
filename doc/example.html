@@ -6,21 +6,22 @@
     <link rel="stylesheet" href="ntrace.css">
   </head>
   <body>
-    <div class="nav">
-      <span class="up"><a href="index.html">Home</a></span>
-      <br clear="all">
-    </div>
+    <div id="content">
+      <div class="nav">
+        <span class="up"><a href="index.html">Home</a></span>
+        <br clear="all">
+      </div>
 
-    <h2>Example</h2>
+      <h1>Examples</h1>
 
-    <h3>Code example</h3>
+      <p>Okay, so let's get right into it. Let's assume we are writing a Mandelbrot fractal
+        program and we want to trace what it is doing. A typical piece of code may then look like this:</p>
 
-    <p>Let's assume we use a copy of the sample header file and renamed it to <b>logger.h</b>.
-      A typical piece of code may then look like this:</p>
+<code>
+#define ENABLE_NTRACE
+#include &quot;ntrace.h&quot;
 
-    <code>
-#include &quot;logger.h&quot;
-#include &quot;mandelbrot.hh&quot;
+#include &quot;mandelbrot.h&quot;
 
 TR_MODULE(&quot;Mandelbrot&quot;);
 
@@ -33,7 +34,6 @@ MandelBrot::MandelBrot (float minx, float maxx, float miny, float maxy)
   if (!value)
   {
     TR_ERR ("Could not allocate memory!");
-    return;
   }
   ....
 }
@@ -44,7 +44,7 @@ void MandelBrot::calculateAll ()
 
   for (int i = 0; i < lines; i++)
   {
-    TR (1, "line = %d", i);
+    TR (NTrace::Info, "line = %d", i);
     calculateLine (i);
   }
 }
@@ -55,54 +55,65 @@ void MandelBrot::calculateLine (int row)
 
   for (int j = 0; j < columns; j++)
   {
-    TR (2, "column = %d", j);
+    TR (NTrace::Debug, "column = %d", j);
     value[row][j] = calculatePixel (row, j);
   }
 }
-    </code>
+</code>
 
-    <h3>Example output</h3>
+      <p>In the first lines we define <strong>ENABLE_NTRACE</strong> that enables some of the macros that are used
+        further in the code. If we do not enable this most of the macros evaluate to no-ops (e.g. they vanish from
+        compilation). Next we include the main header file, ntrace.h<p>
 
-  <code>
-( 6209) &gt;&gt; Mandelbrot::Mandelbrot(float, float, float, float) ([-2.000000, -1.500000; 1.000000, 1.500000])
-( 6209) &lt;&lt; Mandelbrot::Mandelbrot(float, float, float, float)
-( 6209) &gt;&gt; void Mandelbrot::calculateAll()
-( 6209)   line = 0
-( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-( 6209)   line = 1
-( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-( 6209)   line = 2
-( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-....
-( 6209)   line = 638
-( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-( 6209)   line = 639
-( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-( 6209) &lt;&lt; void Mandelbrot::calculateAll()
-  </code>
+      <div class="tip">
+        <p><span class="tip">Tip</span>Rather than setting ENABLE_TRACE in every file either set it globally in your compiler settings
+          for your project, or even better, create your own header file and enable it there, based on your
+          own debug preferences. You can also add extra macros there for your convenience.</p>
+      </div>
 
-    <p>
-    The first column shows the process ID; then if a function is being entered (&gt;&gt;) or left (&lt;&lt;),
-    together with the function name and parameter types. Any additional parameters that are declared in
-    the TR_FUNC macro are shown as well. Any deeper function calls are indented, which makes it easy to
-    see where each function call starts and ends.
-    </p>
+      <h3>Example output</h3>
 
-    <p>In this example you do see the TR(1,...) call in calculateAll, but not TR(2,...) in calculateLine. That is
-      because the default debug level is 1 for each module. More about this on the
-      <a href="macros.html">macros page</a>.
-    </p>
+      <code>
+        ( 6209) &gt;&gt; Mandelbrot::Mandelbrot(float, float, float, float) ([-2.000000, -1.500000; 1.000000, 1.500000])
+        ( 6209) &lt;&lt; Mandelbrot::Mandelbrot(float, float, float, float)
+        ( 6209) &gt;&gt; void Mandelbrot::calculateAll()
+        ( 6209)   line = 0
+        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+        ( 6209)   line = 1
+        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+        ( 6209)   line = 2
+        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+        ....
+        ( 6209)   line = 638
+        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+        ( 6209)   line = 639
+        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+        ( 6209) &lt;&lt; void Mandelbrot::calculateAll()
+      </code>
+
+      <p>
+        The first column shows the process ID; then if a function is being entered (&gt;&gt;) or left (&lt;&lt;),
+        together with the function name and parameter types. Any additional parameters that are declared in
+        the TR_FUNC macro are shown as well. Any deeper function calls are indented, which makes it easy to
+        see where each function call starts and ends.
+      </p>
+
+      <p>In this example you do see the TR(1,...) call in calculateAll, but not TR(2,...) in calculateLine. That is
+        because the default debug level is 1 for each module. More about this on the
+        <a href="macros.html">macros page</a>.
+      </p>
 
 
-    <div class="nav">
-      <span class="left"><a href="index.html">Main page</a></span>
-      <span class="right"><a href="installation.html">Installation</a></span>
-      <br clear="all">
+      <div class="nav">
+        <span class="left"><a href="index.html">Main page</a></span>
+        <span class="right"><a href="installation.html">Installation</a></span>
+        <br clear="all">
+      </div>
     </div>
-
+    <footer>&copy; 2019 Bankai Software bv</footer>
   </body>
 </html>

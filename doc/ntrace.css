@@ -19,17 +19,20 @@ h1, h2, h3 {
 
 div.nav {
   width: 90%;
-  padding: .5em 1em 0 1em;
-  margin-left: 5%;
-  min-height: 2em;
+  margin: 0 auto;
+  padding: 0.5em 1em;
   background-color: #eeeeee;
   color: black;
 }
 
-.left {
+div.nav a {
+  text-decoration: none;
+}
+
+.previous {
   float: left;
 }
-.left:before {
+.previous:before {
   content: '<< ';
 }
 
@@ -37,11 +40,37 @@ div.nav {
   content: '↑ ';
 }
 
-.right {
+.next {
   float: right;
 }
-.right:after {
+.next:after {
   content: ' >>';
+}
+
+
+#content {
+  max-width: 1200px;
+  margin: 0 auto;
+
+
+}
+
+
+footer {
+  margin-top: 1.5em;
+  text-align: center;
+  color: #808080;
+  font-size: 80%;
+}
+
+/* commands for command line */
+cmds {
+  white-space: pre;
+  padding-left: 2em;
+  background-color: black;
+  color: white;
+  display: block;
+  font-family: monospace, sans;
 }
 
 code {
@@ -49,4 +78,18 @@ code {
   padding-left: 2em;
   background-color: #f0f0f0;
   display: block;
+}
+
+div.tip {
+  margin-left: 2em;
+  background-color: #e0e0ff;
+  padding: 1em;
+}
+
+span.tip
+{
+  float: left;
+  font-size: 200%;
+  font-weight: 800;
+  margin-right: 2em;
 }
