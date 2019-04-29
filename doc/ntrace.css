@@ -80,13 +80,18 @@ code {
   display: block;
 }
 
-div.tip {
+.inline-code {
+  font-family: monospace, sans;
+  background-color: #e0e0e0;
+}
+
+div.tip, div.note {
   margin-left: 2em;
   background-color: #e0e0ff;
   padding: 1em;
 }
 
-span.tip
+span.tip, span.note
 {
   float: left;
   font-size: 200%;

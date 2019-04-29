@@ -12,22 +12,31 @@
         <br clear="all">
       </div>
 
-      <h1>Examples</h1>
+      <h1>Using NTrace in your code</h1>
 
-      <p>Okay, so let's get right into it. Let's assume we are writing a Mandelbrot fractal
-        program and we want to trace what it is doing. A typical piece of code may then look like this:</p>
+      <ul>
+        <li><a href="#example">Example</a></li>
+        <li><a href="#main">Inside main()</a></li>
+        <li><a href="#debug_release">Debug vs release</a></li>
+        <li><a href="#levels">Module log levels</a></li>
+        <li>Writing your own macros</li>
+      </ul>
 
+      <p><a name="example"></a>Okay, so let's get right into it. Let's assume we are writing a Mandelbrot fractal
+        program and we want to trace what it is doing. A typical piece of code may look like this:</p>
+
+      <h3>Example code</h3>
 <code>
 #define ENABLE_NTRACE
 #include &quot;ntrace.h&quot;
 
 #include &quot;mandelbrot.h&quot;
 
-TR_MODULE(&quot;Mandelbrot&quot;);
+TR_MODULE (&quot;Mandelbrot&quot;);
 
 MandelBrot::MandelBrot (float minx, float maxx, float miny, float maxy)
 {
-  TR_FUNC(&quot;[%f,%f; %f,%f]&quot;, minx, miny, maxx, maxy);
+  TR_FUNC (&quot;[%f,%f; %f,%f]&quot;, minx, miny, maxx, maxy);
 
   ....
   value = new int[lines * columns];
@@ -62,50 +71,223 @@ void MandelBrot::calculateLine (int row)
 </code>
 
       <p>In the first lines we define <strong>ENABLE_NTRACE</strong> that enables some of the macros that are used
-        further in the code. If we do not enable this most of the macros evaluate to no-ops (e.g. they vanish from
+        further in the code. If we do not enable this most of the macros evaluate to no-ops (i.e. they vanish from
         compilation). Next we include the main header file, ntrace.h<p>
 
-      <div class="tip">
-        <p><span class="tip">Tip</span>Rather than setting ENABLE_TRACE in every file either set it globally in your compiler settings
-          for your project, or even better, create your own header file and enable it there, based on your
-          own debug preferences. You can also add extra macros there for your convenience.</p>
-      </div>
+      <p>The first macro we encounter is <strong>TR_MODULE</strong>; it takes a string as argument that is the name
+         of the module. A module is any group of files you think that belong together; it could even be one file. The reason
+         to group them together is that a) you can set the debug level for all files in one go, and b) you can filter
+         messages for this module.<p>
+
+      <p>Each file that belongs to the same module must use the same name, which is <u>case sensitive</u>. The name is
+        free format; for complex projects you could even use hierarchies with dots, dashes or slashes in between. There
+      must be one (and only one) TR_MODULE macro in your file in order to allow logging.</p>
+
+      <p>The next macro is <strong>TR_FUNC</strong>; this indicates a function call. The function name is logged,
+        as well as any parameters that you supply, in this case 4 floating point numbers. TR_FUNC tracks both
+        function entry and exit; two separate log entries are generated.<p>
+
+      <p>Note that TR_FUNC is only called when the line is reached in your program. If you have variables initialized
+        inside your function before the macro (possibly with other TR_FUNC macros), this will be done first. You could
+        also return before reaching TR_FUNC, in which case neither entry or exit is logged (this is occasionally useful
+      in a function which is called a lot but only rarely does some actual work).</p>
+
+      <p>By the way, TR_FUNC is not mandatory in all your functions. You can use all all logging macros without
+        this being present; it is only intended for function tracing.</p>
+
+      <p>Next up is <strong>TR_ERR</strong>; this is a special macro that will make sure an error is always logged, even
+        if in release mode (more about debug vs. release later).</p>
+
+      <p>Finally, there is <strong>TR</strong>; this short macro takes a debug level, a message and optional
+        arguments. This is the workhorse for logging in your program. For each message you determine how important
+        it is, which is the first argument. The rule is: the lower the number, the more important it is, with 0 being
+        the most important message. NTrace pre-defines the following levels (modelled after syslog):</p>
+
+      <ol start="0">
+        <li>Emergency</li>
+        <li>Alert</li>
+        <li>Critical</li>
+        <li>Error (*)</li>
+        <li>Warning</li>
+        <li>Notice</li>
+        <li>Info</li>
+        <li>Debug</li>
+      </ol>
+
+      <p><sup>*</sup> This is different from the TR_ERR macro.</p>
+
+      <p>However, you are free to determine your own logging levels; if you find typing the strings too cumbersome
+        or too detailed, use numbers. I find that in most cases levels 0..3 are sufficient.</p>
+
+      <p>There is one more macro, <strong>TR_OUT</strong>; this behaves similar to TR_ERR but only
+        produces output on the standard output and is intented for a quick extra debug message without
+        the debug level; it operates independantly from the module debug level.</p>
 
       <h3>Example output</h3>
 
+      <p>So, after all this work, this might be the output:</p>
+
       <code>
-        ( 6209) &gt;&gt; Mandelbrot::Mandelbrot(float, float, float, float) ([-2.000000, -1.500000; 1.000000, 1.500000])
-        ( 6209) &lt;&lt; Mandelbrot::Mandelbrot(float, float, float, float)
-        ( 6209) &gt;&gt; void Mandelbrot::calculateAll()
-        ( 6209)   line = 0
-        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-        ( 6209)   line = 1
-        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-        ( 6209)   line = 2
-        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-        ....
-        ( 6209)   line = 638
-        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-        ( 6209)   line = 639
-        ( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
-        ( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
-        ( 6209) &lt;&lt; void Mandelbrot::calculateAll()
+( 6209) &gt;&gt; Mandelbrot::Mandelbrot(float, float, float, float) ([-2.000000, -1.500000; 1.000000, 1.500000])
+( 6209) &lt;&lt; Mandelbrot::Mandelbrot(float, float, float, float)
+( 6209) &gt;&gt; void Mandelbrot::calculateAll()
+( 6209)   line = 0
+( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+( 6209)   line = 1
+( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+( 6209)   line = 2
+( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+....
+( 6209)   line = 638
+( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+( 6209)   line = 639
+( 6209)   &gt;&gt; void Mandelbrot::calculateLine(int)
+( 6209)   &lt;&lt; void Mandelbrot::calculateLine(int)
+( 6209) &lt;&lt; void Mandelbrot::calculateAll()
       </code>
 
       <p>
-        The first column shows the process ID; then if a function is being entered (&gt;&gt;) or left (&lt;&lt;),
-        together with the function name and parameter types. Any additional parameters that are declared in
-        the TR_FUNC macro are shown as well. Any deeper function calls are indented, which makes it easy to
+        The first column shows the process ID; then if a function is being entered (&gt;&gt;) or exited (&lt;&lt;),
+        together with the function name and parameter types. Any additional arguments that are declared in
+        the TR_FUNC macro are shown as well. Nested function calls are indented (shifted to the right), which makes it easy to
         see where each function call starts and ends.
       </p>
 
-      <p>In this example you do see the TR(1,...) call in calculateAll, but not TR(2,...) in calculateLine. That is
-        because the default debug level is 1 for each module. More about this on the
-        <a href="macros.html">macros page</a>.
+      <p>In this example you do see the TR(NTrace::Info,...) call in calculateAll, but not TR(NTrace::Debug,...) in calculateLine. That is
+        because the default debug level is 'Info' for each module. More about this in the <a href="#levels">debug level section</a>.
       </p>
+
+      <h2><a name="main"></a>Inside main()</h2>
+
+      <p>Now if you only read the previous section, added the macros to a program of yours, compiled and ran it, you might be
+        disappointed to find that nothing is printed.
+        That is because by default NTrace does not output anything; you must configure NTrace to enable one or more output
+        channels.</p>
+
+      <p>That's right, one or more output channels. NTrace allows you to simultaneously log to more than
+        one destination. The most logical place is to do that inside your main() function (or WinMain() on Windows):</p>
+
+      <code>
+int main(int argc, char *argv[])
+{
+  ...
+
+  NTrace::IManager *ntrace_mgr = NTrace::IManager::instance ();
+  ntrace_mgr->enableDebugOutput ();
+  if (enable_file)
+  {
+    NTrace::FileOutput *fo = new NTrace::FileOutput ("test", ".log", 1024, 5);
+    ntrace_mgr->addOutput (fo);
+  }
+  ...
+      </code>
+
+      <p>Note: in case you hadn't noticed before, NTrace uses the <span class="inline-code">NTrace</span> C++ namespace.</p>
+
+      <p>First, we get a pointer to the Manager object (there is only ever one instance of this object; it's a singleton).
+        Then we call <strong>enableDebugOuput()</strong> which adds a default output channel that prints messages
+        to stdout/stderr on Linux and the debug console inside Visual Studio on Windows.</p>
+
+      <div class="note">
+        <p><span class="note">Note</span>A Windows program (i.e. one that actually uses a window
+          on your desktop, not a command line program) will not produce any output
+          if you start it from a shell. That is because such programs do not have
+          a concept of standard output. Confusingly though, you can get this output
+          if you redirect it to a file with the &gt; operator on the command line:</p>
+
+        <cmds>
+C:\Users\Joe\Projects\MyWindowsProject&gt; MyWindowsProject.exe &gt; debug.log
+        </cmds>
+      </div>
+
+      <p>The next lines create another output channel, in this case a <strong>FileOutput</strong> which
+        writes to (surprise, surprise) a file.
+        The constructor of FileOutput takes up to 5 arguments but only two are mandatory (for more information, see the
+        <a href="doxygen/html/classNTrace_1_1FileOutput.html">Doxygen documentation</a>). Here we set up the output
+        to write to &quot;test.log&quot;, rotate the file after 1024 bytes and keep 5 old files around. When the current log
+      file is &quot;full&quot;, the file is renamed to test-YYMMDD-HHMMSS.log (where YYMMDD-HHMMSS is the current timestamp)
+      and older files are removed.</p>
+
+      <p>All log messages are written to both output channels. Note that if you write to
+        stdout or stderr in your program it may not end up exactly between the log
+        messages; this is because writing to outputs is handled in a separate thread in NTrace.</p>
+
+      <p>By the way, you don't have to worry that log messages are lost before you enable any output
+        channel; they are queued inside the Manager.</p>
+
+      <p>At the moment of writing, only the Debug and FileOutput channels are available; but you
+        are free to write your <a href="">own output channel</a>.</p>
+
+
+      <p>Finally, it is good practice to shut down your logging properly before exiting your program:</p>
+
+      <code>
+int main(int argc, char *argv[])
+{
+  ...
+  // Initialize NTrace
+
+  ...
+  // Do your thing here
+
+  ...
+  // Shutdown
+  ntrace_mgr->shutdown ();
+  return 0;
+}
+
+</code>
+
+      <p>This will ensure all pending messages are written and output channels closed properly.</p>
+
+
+      <h2><a name="debug_release"></a>Debug versus Release</h2>
+
+      <p>You may ask, why not enable DebugOutput by default? Well, we could do that
+        but we don't know how you are going to use NTrace. The way I see it there are
+        two 'modes' of using NTrace.</p>
+
+      <p>1: you use it to thorougly debug and test your program while developing, then
+        disable most of the logging when you are releasing it to your users. This is
+        often the case if performance is a concern and/or you don't want to burden
+        your users with lots of debugging.</p>
+
+      <p>2: you leave NTrace enabled in your release builds and use it to track
+        down bugs or problems while in production. This is often the case if you
+        can't halt production but need detailed information (perhaps on a temporary
+        basis).</p>
+
+      <p>In the first case you can use the standard <span class="inline-code">ntrace.h</span> include file and
+        define ENABLE_TRACE while developing. Perhaps override the TR_ERR macro to
+        log real errors to a file (the default writes to stderr, which is not always useful).</p>
+
+      <div class="tip">
+        <p><span class="tip">Tip</span>Rather than setting ENABLE_TRACE in every file either set it globally in your compiler settings
+          for your project, or even better, create your own header file and enable it there based on your
+          debug settings. You can also add extra macros there for your convenience.</p>
+      </div>
+
+      <p>The second scenario requires you to properly select the log level when
+        using the TR macro. Here you will use a verbose module log level (see below)
+        when developing, then scale it down for production. In case there's a
+        problem you can increase the debug level for one or more modules
+        until you can pinpoint the cause.</p>
+
+      <p>The drawback of the second approach is that all log messages are
+        still being generated, and although they are not written this may
+        cause significant overhead. A solution is to create your
+        own macros for the lowest levels of debugging and disable these
+        for production, only generating the more important log messages.
+        See <span class="inline-code">ntrace.h</span> for an example
+        of how to make macros &quot;vanish&quot; from your code.</p>
+
+
+      <h2><a name="levels">Module log levels</a></h2>
+
+      <p>
 
 
       <div class="nav">

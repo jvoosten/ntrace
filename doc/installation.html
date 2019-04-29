@@ -36,6 +36,8 @@ $ sudo make install
       <p>Alternatively, you can include NTrace in your own project in a subdirectory and recursively call configure from
         your main project file.</p>
 
+      <p>Either way, you must link the ntrace library to your application; a simple <span class="inline-code">-lntrace</span> to your LDFLAGS should do the trick.</p>
+
       <h2>Windows</h2>
 
       <p>For Visual Studio there is a <strong>.vcxproj</strong> included in the package; this was generated using Visual Studio
