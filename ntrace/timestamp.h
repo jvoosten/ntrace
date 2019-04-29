@@ -9,10 +9,10 @@ namespace NTrace
 /**
 \brief Represent timestamp with microsecond precision
 
-This class represents a timestamp as seconds (since January 1st, 1970) and microseconds in UTC; the microsecond
+This class represents a timestamp as seconds and microseconds in UTC; the microsecond
 precision depends on the underlying operating system of course.
 
-It also performs simple arithmetic to subtract and add timestamps.
+It also performs simple arithmetic to compare and subtract timestamps.
 */
 class NTRACE_EXPORT Timestamp
 {

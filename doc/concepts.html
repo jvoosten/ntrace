@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TODO supply a title</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="ntrace.css">
+  </head>
+  <body>
+    <div id="content">
+
+      <h1>Extending NTrace</h1>
+
+      <p>If you want to extend NTrace for your own needs, you must make yourself
+        familiair with the concepts of NTrace.</p>
+
+      <h2><a name="concepts">Concepts</a></h2>
+
+
+
+      <p>NTrace uses the concept of input and output channels. An input channel
+        generates log messages and an output channel takes those log messages
+        and stores them somewhere, with optional formatting. In the middle is the Manager
+        which keeps track of input and output channels and queues log messages.</p>
+
+      <img src="concepts.png" width="742" height="247"/>
+
+      <p>There can be multiple input and output channels but there is only one manager.</p>
+
+
+      <h3>Inputs</h3>
+
+      <p>NTrace comes with one pre-defined input channel: a Module. A module is
+        automatically created when you register it for the first time
+        with IManager::registerModule().
+
+    </div>
+  </body>
+</html>

@@ -8,103 +8,93 @@
 
 
   <body>
-    <h1>NTrace: C++ debugging &amp; tracing library</h1>
+    <div id="content">
+      <h1>NTrace: C++ debugging &amp; tracing library</h1>
 
-    <ul>
-      <li><a href="#introduction">Introduction</a></li>
-      <li><a href="#features">Features</a></li>
-      <li><a href="#basic">Basic functionality</a></li>
-      <li><a href="#concepts">Concepts</a></li>
-      <li><a href="installation.html">Building &amp; installation</a></li>
-      <li><a href="example.html">Example</a></li>
-    </ul>
+      <p>Version 0.3.0</p>
 
-    <h2><a name="introduction">Introduction</a></h2>
+      <ul>
+        <li><a href="#introduction">Introduction</a></li>
+        <li><a href="#features">Features</a></li>
+        <li><a href="#basic">Basic functionality</a></li>
+        <li>Using it in your own code
+          <ul>
+            <li><a href="installation.html">Building &amp; installation</a></li>
+            <li><a href="example.html">Inside your source</a></li>
+            <li>Reading and storing configurations</li>
+          </ul>
+        </li>
+        <li>Extending NTrace
+          <ul>
+            <li><a href="concepts.html">Concepts</a></li>
+            <li>Creating an Input</li>
+            <li>Creating an Output</li>
+            <li>Filtering</li>
+            <li>Doxygen documentation</li>
+          </ul>
+        </li>
+        <li><a href="#license">License</a></li>
+      </ul>
 
-    <p>Debugging your program, or simply keeping track of what it is doing is never easy.
-      <b>printf()</b> statements scattered throughout the code clutter up your source files
-      and either produce too much or too little output. Hooking up the program to a debugger can
-      show great detail of what the program is doing and why, but doesn't present a clear
-      picture of the program flow.</p>
+      <h2><a name="introduction">Introduction</a></h2>
 
-    <p>NTrace is a small library that, in combination with some clever C-style macros, helps
-      to track program flow and show only the debug information you are interested in. It is certainly
-      not the first, the last or the best debug library, but it might just be what you are looking for.</p>
+      <p>Debugging your program, or simply keeping track of what it is doing is never easy.
+        <em>printf()</em> statements scattered throughout the code clutter up your source files
+        and either produce too much or too little output. Hooking up the program to a debugger can
+        show great detail of what the program is doing and why, but doesn't present a clear
+        picture of the program flow.</p>
 
-    <h2><a name="features">Features</a></h2>
+      <p>NTrace is a small library that, in combination with some clever C-style macros, helps
+        to track program flow and show only the debug information you are interested in. It is certainly
+        not the first, the last or the best debug library, but it might just be what you are looking for.</p>
 
-    <ul>
-      <li>printf() style formatting</li>
-      <li>Uses C preprocessor; little to no overhead for production version</li>
-      <li>Adjustable debug levels per module</li>
-      <li>Tracks function enter and leaves</li>
-      <li>Millisecond timestamping with process and thread ID</li>
-      <li>Output can be redirected to multiple targets</li>
-      <li>Thread-safe</li>
-    </ul>
+      <h2><a name="features">Features</a></h2>
 
-    <p>However, there are a few limitations:</p>
+      <ul>
+        <li>printf() style formatting.</li>
+        <li>Uses C preprocessor; little to no overhead for production version.</li>
+        <li>Adjustable debug levels per module.</li>
+        <li>Tracks function enter and leaves.</li>
+        <li>Millisecond timestamping with process and thread ID.</li>
+        <li>Output can be redirected to multiple targets.</li>
+        <li>Thread-safe.</li>
+      </ul>
 
-    <ul>
-      <li>Works with C++ only</li>
-      <li>Although NTrace is thread-safe, there is no guarantee messages will be written in order.</li>
-    </ul>
+      <p>However, there are a few limitations:</p>
 
-    <h2><a name="basic">Basic functionality</a></h2>
+      <ul>
+        <li>Works with C++ only.</li>
+        <li>Although NTrace is thread-safe, there is no guarantee messages will be written in order.</li>
+      </ul>
 
-    <p>There are two parts in NTrace:</p>
-    <ol>
-      <li>A way to keep track of function calls as the program enter and leaves them;</li>
-      <li>Print debug info using the printf() syntax.</li>
-    </ol>
-    <p>The latter has a debug 'level', so that more or less information can be
-      printed as desired. This level is set per module and can be changed at runtime (modules are described below).</p>
+      <p>The latter is a bit subtle; although messages within a thread will be saved in order, messages
+        from other threads with a later timestamp may be written before yours (it all comes down to scheduling).
+        Therefore, when looking at a log file it is important to check timestamps in case things do not seem right.</p>
 
-    <p>The NTrace library consists of just a few C++ classes; after installation there will
-      be a shared library and some C++ header files on your system. This header file
-      also contains macros that provide all logging functionality for NTrace; you are however
-      free to create your own macros.</p>
+      <h2><a name="basic">Basic functionality</a></h2>
 
+      <p>There are two parts in NTrace:</p>
+      <ol>
+        <li>A way to keep track of function calls as the program enter and leaves them.</li>
+        <li>Print debug info using the printf() syntax.</li>
+      </ol>
+      <p>The latter has a debug 'level' so that more or less information can be
+        shown as desired. This level is set per module and can be changed at runtime.</p>
 
-    <div class="nav">
-      <span class="right"><a href="example.html">Example</a></span>
-      <br clear="all">
+      <p>The NTrace library consists of just a few C++ classes; after installation there will
+        be a shared library and some C++ header files on your system. The main header file
+        also contains macros that provide all logging functionality for NTrace; you are however
+        free to create your own macros (see <a href="example.html">Inside your source</a>).</p>
+
+      <p>You can can continue reading on how to <a href="installation.html">install</a> and <a href="example.html">use</a> the library,
+        or <a href="concepts.html">extend it</a> for your own needs.</p>
+
+      <h2><a name="license">License</a></h2>
+
+      <p>This library is covered by the <a href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU GPL version 3</a>.</p>
+
+      <footer>&copy; 2019 Bankai Software bv</footer>
     </div>
-
-
-    <h2><a name="concepts">Concepts</a></h2>
-
-    <p>NTrace uses the concept of input and output channels. An input channel
-      generates log messages and an output channel takes those log messages
-      and stores them somewhere, with optional formatting. In the middle is a Manager
-      which keeps track of input and output channels and queues log messages.</p>
-
-    <img src="concepts.png" width="742" height="247"/>
-
-    <p>There can be multiple input and output channels but there is only one manager.</p>
-
-
-    <h3>Inputs</h3>
-
-    <p>NTrace comes with one pre-defined input channel: a Module. You define the
-      modules yourself by grouping files into them based
-    
-
-    <h2>Macro reference</h2>
-
-    <p>This section describes the default macro set in detail (of course, you are free to create
-      your own macros if you so desire). The macros are divided into three parts:
-      those for initialization, adjusting debug output and those used inside
-      your functions.</p>
-
-    <h3>Macros for initialization</h3>
-
-    <p>The following macros are typically only called in your main() routine.
-
-    <h3>Setting module debug levels</h3>
-
-    <h3>Function macros</h3>
-
   </body>
 
 </html>

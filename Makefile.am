@@ -15,8 +15,8 @@ libntrace_la_LDFLAGS=-version-info 7:0:0
 libntrace_la_SOURCES=\
   ntrace/function.cpp ntrace/manager.cpp ntrace/message.cpp \
   ntrace/output_base.cpp ntrace/timestamp.cpp \
-  inputs/module.cpp \
-  outputs/debug_output.cpp outputs/file_output.cpp
+  ntrace/inputs/module.cpp \
+  ntrace/outputs/debug_output.cpp ntrace/outputs/file_output.cpp
 
 
 include_HEADERS=\
@@ -24,5 +24,6 @@ include_HEADERS=\
 
 nobase_include_HEADERS=\
   ntrace/interfaces.h ntrace/ntrace_exports.h \
-  ntrace/function.h ntrace/manager.h inputs/module.h \
-  outputs/debug_output.h outputs/file_output.h
+  ntrace/function.h ntrace/manager.h ntrace/message.h ntrace/timestamp.h ntrace/output_base.h\
+  ntrace/inputs/module.h \
+  ntrace/outputs/debug_output.h ntrace/outputs/file_output.h
