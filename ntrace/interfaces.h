@@ -35,8 +35,11 @@ enum Level
 /**
 \brief Interface for NTracer input
 
-An IInput interface provides a log message to a (the) central log message manager. It can
+An IInput interface provides a log message to the central log message manager. It can
 directly produce log messages or capture from some other source.
+
+Each message is automatically timestamped and the current process and thread ID are
+registered as well.
 */
 
 class NTRACE_EXPORT IInput
@@ -45,7 +48,7 @@ public:
   // Obligatory empty virtual destructor
   virtual ~IInput () {};
 
-  virtual IManager * NTRACE_CALL getManager () const = 0;
+  virtual IManager *NTRACE_CALL getManager () const = 0;
   virtual std::string NTRACE_CALL getName () const = 0;
 
 #if defined(__GCC__) && (__GCC__ >= 4)
@@ -69,6 +72,61 @@ protected:
 
   /// The manager object
   IManager *m_manager;
+};
+
+
+/**
+\brief Module interface
+
+In the context of NTrace, a 'module' is a set of related source files;
+it could be a library, a submodule in your program, or even a single large
+object. Log messages that belong to the same module are treated the same.
+
+NTrace::Module objects are created by the central Manager since there can be
+multiple source files that belong to the same module. Your source
+file should contain a statically generated pointer to a Module object; see
+the TR_MODULE macro in the ntrace.h header file. The Module object is
+also the basis for the TR() macros.
+
+Modules contain a basic log-level; any log message with a priority above
+the log level is discarded (e.g. use log(0, ...) for very important messages,
+log(2) for less so, and log(7) for debug).
+
+Finally, you can disable tracking of function enter/leave calls. This may reduce
+clutter in heavily used modules.
+
+By default log messages of level Level::Emergency to Level::Notice (0..5) are passed through
+and function enter/leaves are tracked.
+
+*/
+class NTRACE_EXPORT IModule: virtual public IInput
+{
+public:
+  /**
+  \brief Get current maximum log level.
+
+  Returns currently cut-off level for messages.
+  */
+  virtual int NTRACE_CALL getLevel () const = 0;
+  /**
+  \brief Set maximum log level.
+  \parame level New level; for recommended values see \ref Level.
+
+  Sets new maximum log level for the module; any messages with a level higher
+  than this are discarded. Thus, the lower the level, the more important the message is.
+  */
+  virtual void NTRACE_CALL setLevel (int level) = 0;
+
+  /**
+  \brief Report whether or not function enter and leaves are tracked.
+  */
+  virtual bool NTRACE_CALL getFunctionTracking () const = 0;
+
+  /**
+  \brief Set function enter/leave tracking.
+  \param enable If true, function calls are tracked.
+  */
+  virtual void NTRACE_CALL setFunctionTracking (bool enable) = 0;
 };
 
 /**
@@ -140,7 +198,7 @@ public:
 
   virtual Timestamp NTRACE_CALL getStartTimestamp () const = 0;
 
-  virtual IInput * NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level = NTrace::Notice) = 0;
+  virtual IModule *NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level = NTrace::Notice) = 0;
 
   /**
   \brief Return list of current output modules

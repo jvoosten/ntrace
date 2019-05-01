@@ -22,7 +22,7 @@ In addition you can restrict the number of log files; old logfiles are automatic
 class FileOutput : public OutputBase
 {
 public:
-  NTRACE_EXPORT FileOutput (const std::string &basename, const std::string &extension, unsigned int max_file_size = 0, int max_number_of_files = 0, char log_separator = '-');
+  NTRACE_EXPORT FileOutput (const std::string &basename, const std::string &extension, unsigned int max_file_size = 0, int max_number_of_files = 0, char file_separator = '-');
 
   virtual void NTRACE_CALL saveMessage (const Message &msg);
 
@@ -37,7 +37,7 @@ private:
 
   std::ofstream m_outStream;
   std::string m_currentFilename;
-  long m_currentFileSize;
+  unsigned long m_currentFileSize;
 
   bool openOutputStream ();
   bool rotateOutputStream ();

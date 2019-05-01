@@ -30,6 +30,7 @@ public:
     Error,        // Important log message, intended for stderr or logging in Release mode
     Entry,        // Function entry messages
     Exit,         // Function exit messages
+    User = 100,   // Startvalue for User-defined log messages
   } type;
   /// The message
   std::string message;

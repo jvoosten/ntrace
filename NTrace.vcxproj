@@ -31,7 +31,7 @@
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>v141</PlatformToolset>
   </PropertyGroup>
@@ -101,27 +101,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="inputs\module.cpp" />
+    <ClCompile Include="input_base.cpp" />
     <ClCompile Include="ntrace\function.cpp" />
+    <ClCompile Include="ntrace\inputs\module.cpp" />
     <ClCompile Include="ntrace\manager.cpp" />
     <ClCompile Include="ntrace\message.cpp" />
+    <ClCompile Include="ntrace\outputs\debug_output.cpp" />
+    <ClCompile Include="ntrace\outputs\file_output.cpp" />
     <ClCompile Include="ntrace\output_base.cpp" />
     <ClCompile Include="ntrace\timestamp.cpp" />
-    <ClCompile Include="outputs\debug_output.cpp" />
-    <ClCompile Include="outputs\file_output.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="inputs\module.h" />
+    <ClInclude Include="input_base.h" />
     <ClInclude Include="ntrace.h" />
     <ClInclude Include="ntrace\function.h" />
+    <ClInclude Include="ntrace\inputs\module.h" />
     <ClInclude Include="ntrace\interfaces.h" />
     <ClInclude Include="ntrace\manager.h" />
     <ClInclude Include="ntrace\message.h" />
     <ClInclude Include="ntrace\ntrace_exports.h" />
+    <ClInclude Include="ntrace\outputs\debug_output.h" />
+    <ClInclude Include="ntrace\outputs\file_output.h" />
     <ClInclude Include="ntrace\output_base.h" />
     <ClInclude Include="ntrace\timestamp.h" />
-    <ClInclude Include="outputs\debug_output.h" />
-    <ClInclude Include="outputs\file_output.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="doc\example.html" />

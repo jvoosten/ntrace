@@ -42,16 +42,19 @@
     <ClCompile Include="ntrace\message.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="inputs\module.cpp">
+    <ClCompile Include="ntrace\output_base.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ntrace\inputs\module.cpp">
       <Filter>Source Files\Inputs</Filter>
     </ClCompile>
-    <ClCompile Include="outputs\debug_output.cpp">
+    <ClCompile Include="ntrace\outputs\debug_output.cpp">
       <Filter>Source Files\Outputs</Filter>
     </ClCompile>
-    <ClCompile Include="outputs\file_output.cpp">
+    <ClCompile Include="ntrace\outputs\file_output.cpp">
       <Filter>Source Files\Outputs</Filter>
     </ClCompile>
-    <ClCompile Include="ntrace\output_base.cpp">
+    <ClCompile Include="input_base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -77,16 +80,19 @@
     <ClInclude Include="ntrace\ntrace_exports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="inputs\module.h">
+    <ClInclude Include="ntrace\output_base.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ntrace\outputs\debug_output.h">
+      <Filter>Header Files\Outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="ntrace\outputs\file_output.h">
+      <Filter>Header Files\Outputs</Filter>
+    </ClInclude>
+    <ClInclude Include="ntrace\inputs\module.h">
       <Filter>Header Files\Inputs</Filter>
     </ClInclude>
-    <ClInclude Include="outputs\debug_output.h">
-      <Filter>Header Files\Outputs</Filter>
-    </ClInclude>
-    <ClInclude Include="outputs\file_output.h">
-      <Filter>Header Files\Outputs</Filter>
-    </ClInclude>
-    <ClInclude Include="ntrace\output_base.h">
+    <ClInclude Include="input_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

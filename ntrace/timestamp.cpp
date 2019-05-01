@@ -23,7 +23,7 @@ Timestamp::Timestamp ()
   FILETIME ft;
   ULARGE_INTEGER ui;
 
-  // Tick. 'File time' is some big-ass integer that counts in 100ns intervals since 1601 (Kepler would have died to get such an accurate clock, then)
+  // Tick. 'File time' is some big-ass integer that counts in 100ns intervals since 1601 (Kepler would have killed to get such an accurate clock)
   ::GetSystemTimeAsFileTime (&ft);
   // Tock. Convert to ULARGE_INTEGER 
   ui.LowPart = ft.dwLowDateTime;

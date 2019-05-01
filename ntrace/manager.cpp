@@ -29,13 +29,10 @@ Manager::~Manager ()
 {
   // Stop thread
   stop ();
-  // Clean up modules
-  for (modules_list::iterator it = m_modules.begin (); it != m_modules.end (); ++it)
-  {
-    delete it->second;
-  }
+  // Clean up modules (should clear IModules through shared pointers)
   m_modules.clear ();
-  // output modules are shared_ptr so automatically cleaned up
+  // output modules are also shared_ptr so automatically cleaned up
+  m_outputs.clear ();
 }
 
 
@@ -79,7 +76,7 @@ Creates a new module or returns an existing one with the same name. The modulena
 is a string you supply to identify the module; if multiple files belong to the same
 module use the same name (case sensitive). 
 */
-IInput *Manager::registerModule (const std::string &module_name, int initial_log_level)
+IModule *Manager::registerModule (const std::string &module_name, int initial_log_level)
 {
   Module *mod = 0;
   modules_list::iterator mit;
@@ -96,6 +93,22 @@ IInput *Manager::registerModule (const std::string &module_name, int initial_log
     mod = (*mit).second;
   }
   return mod;
+}
+
+
+/**
+\brief Return list of all modules
+*/
+std::list<IModule *> Manager::getModules ()
+{
+  std::list<IModule *> ret;
+  // make copy of the list
+  std::lock_guard<std::mutex> lock (m_modulesMutex);
+  for (modules_list::iterator it = m_modules.begin (); it != m_modules.end (); ++it)
+  {
+    ret.push_back (it->second);
+  }
+  return ret;
 }
 
 

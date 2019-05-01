@@ -1,45 +1,33 @@
 #pragma once
 
-#include "../interfaces.h"
+#include "../input_base.h"
+
+
+#pragma warning (push)
+// Surpress 'inherits X via dominance warning'.
+#pragma warning (disable: 4250)
 
 namespace NTrace
 {
 
 /**
-\brief Central input class for a module
+  \brief Implemenation of IModule interface.
 
-In the context of NTrace, a 'module' is a set of related source files;
-it could be a library, a submodule in your program, or even a single large
-object. Log messages that belong to the same module are treated the same.
+  The tracemodule is the object that gets instantiated in your source file.
+  It forwards log events to the TraceManager
 
-A module has convenience logging functions to actually generate log messages with
-automatic timestamp, process ID and printf() style formatting.
-
-NTrace::Module objects are created by the central Manager, since you can have
-multiple source files that belong to the same module and it would be a waste to
-create multiple objects that essentially contain the same information. Your source
-file should contain a statically generated poiner to a Module object.
-
-
-Modules also contain a basic log-level; any log message with a priority
-above the log level is discarded (e.g. use log(0, ...) for very important messages,
-log(2) for less so, and log(7) for debug. See also \ref IInput::Level.
- 
+  Note: IModule is inherited for the function definitions, InputBase for the implementation
 */
-class Module: public IInput
+class Module: public virtual IModule, public virtual InputBase
 {
 public:
-  Module (IManager *mgr, const std::string &name, int level);
+  Module (IManager *mgr, const std::string &name, int level = Level::Notice, bool track_enter_leave = true);
 
-  IManager * NTRACE_CALL getManager () const;
-  std::string NTRACE_CALL getName () const;
+  virtual int NTRACE_CALL getLevel () const;
+  virtual void NTRACE_CALL setLevel (int level);
+  virtual bool NTRACE_CALL getFunctionTracking () const;
+  virtual void NTRACE_CALL setFunctionTracking (bool enable);
 
-/*  void enter (const std::string &function_name);
-  void enter (const std::string &function_name, const std::string &args);
-  void enter (const std::string &file_name, int line_number);
-  void leave (const std::string &function_name);
-  void leave (const std::string &file_name, int line_number);
-  */
 #if defined(__GCC__) && (__GCC__ >= 4)
   void NTRACE_CALL log (int level, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
   void NTRACE_CALL error (const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
@@ -53,18 +41,13 @@ public:
   void NTRACE_CALL error (const std::string &msg);
   void NTRACE_CALL out (const std::string &msg);
 
-  int getLevel () const;
-  void setLevel (int);
-  void incLevel ();
-  void decLevel ();
-
 private:
-	IManager *m_manager;
-	std::string m_moduleName;
-	int m_level;
+  int m_level; ///< Our current log level
+  bool m_functionTracking; ///< if true, function tracking is enabled
   static const int s_buffersize = 2048;
 	char m_buffer[s_buffersize]; ///< Local buffer for all formatting
 };
 
 } // namespace
 
+#pragma warning (pop)

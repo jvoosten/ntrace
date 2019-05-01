@@ -10,12 +10,6 @@
   #define snprintf _snprintf
 #endif
   
-/**
- \class Module
-  The tracemodule is the object that gets instantiated in your source file.
-  It forwards log events to the TraceManager
- */
-
 using namespace NTrace;
 
 /**
@@ -25,27 +19,32 @@ using namespace NTrace;
   \param name The name of the module
   \param level Initial level
  */
-Module::Module (IManager *mgr, const std::string &name, int level)
-  :IInput (mgr)
+Module::Module (IManager *mgr, const std::string &name, int level, bool track_enter_leave)
+  : IInput(mgr), InputBase(mgr, name),
+  m_level (level), m_functionTracking (track_enter_leave)
 {
-  m_manager = mgr;
-  m_moduleName = name;
-  m_level = level;
-}
-
-IManager *Module::getManager () const
-{
-  return m_manager;
-}
-
-std::string Module::getName () const
-{
-  return m_moduleName;
+  // nothing to do here
 }
 
 int Module::getLevel () const
 {
   return m_level;
+}
+
+void Module::setLevel (int level)
+{
+  if (level >= 0)
+    m_level = level;
+}
+
+bool Module::getFunctionTracking () const
+{
+  return m_functionTracking;
+}
+
+void Module::setFunctionTracking (bool enable)
+{
+  m_functionTracking = enable;
 }
 
 #if 0
@@ -267,20 +266,5 @@ void Module::out (const std::string &msg)
   m_manager->pushMessage (message);
 }
 
-void Module::incLevel ()
-{
-  m_level++;
-}
 
-void Module::decLevel ()
-{
-  if (m_level > 0)
-    m_level--;
-}
-
-void Module::setLevel (int level)
-{
-  if (level >= 0)
-    m_level = level;
-}
 

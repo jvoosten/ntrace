@@ -39,7 +39,9 @@ public:
 
   virtual Timestamp NTRACE_CALL getStartTimestamp () const;
 
-  virtual IInput * NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level);
+  virtual IModule *NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level);
+
+  virtual std::list<IModule *> NTRACE_CALL getModules ();
 
   virtual std::list<std::weak_ptr<IOutput>> NTRACE_CALL getOutputs ();
   virtual void NTRACE_CALL addOutput (IOutput *out);
@@ -48,10 +50,6 @@ public:
   virtual void NTRACE_CALL pushMessage (const Message &msg);
 
   virtual void NTRACE_CALL enableDebugOutput ();
-
-  //  void setLogPid (bool b);
-//  void setLogTime (bool b);
-//  void setLogToStdout (bool b);
 
 //  void log (const std::string &log_string);
 //  void error (const std::string &err_string);

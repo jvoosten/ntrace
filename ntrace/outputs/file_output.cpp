@@ -39,7 +39,7 @@ static const int eof_len = 1;
 \param extension String with filename extension (including '.')
 \param max_file_size Maximum allowed file size (in bytes); 0 means unlimited size and no rotation.
 \param max_number_of_files Maximum number of old log files to keep; default of 0 is unlimited.
-\param log_separator Character between log basename and timestamp
+\param file_separator Character between log basename and timestamp
 Sets up an Output module that writes to a text file; the output is formatted to be human-readable.
 
 \note Opening of the file (and purging) is deferred until the first message is saved to the output.
@@ -53,10 +53,10 @@ Specifying \p max_number_of_files without a \p max_file_size is possible but poi
 
 getName() returns the fixed string "ntrace.file_output".
  */
-FileOutput::FileOutput (const std::string &basename, const std::string &extension, unsigned int max_file_size, int max_number_of_files, char log_separator)
+FileOutput::FileOutput (const std::string &basename, const std::string &extension, unsigned int max_file_size, int max_number_of_files, char file_separator)
   : OutputBase ("ntrace.file_output"),
   m_fileBasename (basename), m_fileExtension (extension), m_maximumFilesize (max_file_size), m_maximumNumberOfFiles (max_number_of_files),
-  m_logSeparator (log_separator)
+  m_fileSeparator (file_separator)
 {
   // extract directory part of basename (including directory separator)
   size_t slash_pos = m_fileBasename.find_last_of (DIR_SEPARATOR);
@@ -206,7 +206,7 @@ bool FileOutput::rotateOutputStream ()
 
   strftime (namebuf, namebuf_len, "%y%m%d-%H%M%S", now_tm);
   new_name = m_fileBasename;
-  new_name += m_logSeparator;
+  new_name += m_fileSeparator;
   new_name += namebuf;
   new_name += m_fileExtension;
 
