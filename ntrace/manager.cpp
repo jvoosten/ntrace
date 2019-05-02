@@ -3,7 +3,7 @@
 #include <fstream>
 #include <iostream>
 #ifdef HAVE_STDIO_H
-  #include <stdio.h>
+#include <stdio.h>
 #endif
 #include <sys/types.h>
 
@@ -41,6 +41,7 @@ Manager::~Manager ()
 // public
 
 // Return object instance
+
 IManager *IManager::instance ()
 {
   if (s_traceManager == 0)
@@ -51,16 +52,16 @@ IManager *IManager::instance ()
 }
 
 // Perform orderly cleanup
+
 void IManager::shutdown ()
 {
   delete s_traceManager;
   s_traceManager = 0;
 }
 
-
 /**
 \brief Return initial timestamp of tracing
-*/
+ */
 Timestamp Manager::getStartTimestamp () const
 {
   return m_startTime;
@@ -75,7 +76,7 @@ Timestamp Manager::getStartTimestamp () const
 Creates a new module or returns an existing one with the same name. The modulename
 is a string you supply to identify the module; if multiple files belong to the same
 module use the same name (case sensitive). 
-*/
+ */
 IModule *Manager::registerModule (const std::string &module_name, int initial_log_level)
 {
   Module *mod = 0;
@@ -95,10 +96,9 @@ IModule *Manager::registerModule (const std::string &module_name, int initial_lo
   return mod;
 }
 
-
 /**
 \brief Return list of all modules
-*/
+ */
 std::list<IModule *> Manager::getModules ()
 {
   std::list<IModule *> ret;
@@ -111,10 +111,22 @@ std::list<IModule *> Manager::getModules ()
   return ret;
 }
 
+IModule *Manager::findModule (const std::string &name) const
+{
+  IModule *ret = nullptr;
+
+  modules_list::const_iterator it = m_modules.find (name);
+  if (it != m_modules.end ())
+  {
+    ret = it->second;
+  }
+
+  return ret;
+}
 
 std::list<std::weak_ptr<IOutput>> Manager::getOutputs ()
 {
-  std::list<std::weak_ptr<IOutput>> ret;
+  std::list<std::weak_ptr < IOutput>> ret;
   // Make copy of the list
   std::lock_guard<std::mutex> lock (m_outputsMutex);
   for (std::list<output_ptr>::iterator it = m_outputs.begin (); it != m_outputs.end (); ++it)
@@ -150,10 +162,9 @@ void Manager::removeOutput (IOutput *out)
   }
 }
 
-
 /**
 \brief Push message to list
-*/
+ */
 void Manager::pushMessage (const Message &msg)
 {
   // Just a quick lock
@@ -169,24 +180,19 @@ void Manager::pushMessage (const Message &msg)
   m_messagesAvailable.notify_all ();
 }
 
-
-
-
 void Manager::enableDebugOutput ()
 {
   // Create 
   addOutput (new DebugOutput (m_startTime));
 }
 
-
-
 /**
 \brief Start output thread
 
-*/
+ */
 void Manager::start ()
 {
-  if (!m_outputThread.joinable())
+  if (!m_outputThread.joinable ())
   {
     m_endLoop = false;
     m_outputThread = std::thread (&Manager::outputLoop, this);
@@ -197,7 +203,7 @@ void Manager::start ()
 \brief End output thread
 
 Waits for the thread to finish.
-*/
+ */
 
 void Manager::stop ()
 {
@@ -208,11 +214,9 @@ void Manager::stop ()
   }
 }
 
-
-
 /**
 \brief Background thread to write messages
-*/
+ */
 void Manager::outputLoop ()
 {
   std::unique_lock<std::mutex> lock (m_messagesMutex);
@@ -443,6 +447,7 @@ void Manager::writeConfiguration (const std::string &filename)
 }
 
 #if 0
+
 void Manager::clearText ()
 {
   m_loggedText.clear ();

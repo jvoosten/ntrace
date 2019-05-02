@@ -1,0 +1,81 @@
+10 children were sitting on a fence, then one fell down.
+(24560) [     0.000] >> void func1()
+(24560) [     0.000]   >> void func2(int) (number of kids: 10)
+(24560) [     0.000]     Removing one kid
+(24560) [     0.001]     fib = 89
+(24560) [     0.001]   << void func2(int)
+(24560) [     0.001]   >> void func2(int) (number of kids: 9)
+(24560) [     0.001]     Removing one kid
+9 children were sitting on a fence, then one fell down.
+8 children were sitting on a fence, then one fell down.
+(24560) [     0.001]     fib = 55
+(24560) [     0.001]   << void func2(int)
+(24560) [     0.001]   >> void func2(int) (number of kids: 8)7
+ children were sitting on a fence, then one fell down.(24560) [     0.001]     Removing one kid
+
+6 children were sitting on a fence, then one fell down.
+(24560) [     0.001]     fib = 34
+(24560) [     0.001]   << void func2(int)
+(24560) [     0.001]   >> void func2(int) (number of kids: 7)
+(24560) [     0.001]     Removing one kid
+(24560) [     0.002]     fib = 21
+(24560) [     0.002]   << void func2(int)
+(24560) [     0.002]   >> void func2(int) (number of kids: 6)
+(24560) [     0.002]     Removing one kid
+(24560) [     0.002]     fib = 13
+(24560) [     0.002]   << void func2(int)
+(24560) [     0.002]   >> void func2(int) (number of kids: 5)
+(24560) [     0.002]     Removing one kid
+5 children were sitting on a fence, then one fell down.
+4 children were sitting on a fence, then one fell down.
+(24560) [     0.002]     fib = 8
+3 children were sitting on a fence, then one fell down.
+(24560) [     0.002]   << void func2(int)
+2 children were sitting on a fence, then one fell down.
+(24560) [     0.002]   >> void func2(int) (number of kids: 4)
+1 child was sitting on a fence, then it fell down.
+(24560) [     0.002]     Removing one kid
+(24560) [     0.002]     fib = 5
+And then there were none.
+(24560) [     0.002]   << void func2(int)
+(24560) [     0.002]   >> void func2(int) (number of kids: 3)
+(24560) [     0.002]     Removing one kid
+(24560) [     0.002]     fib = 3
+(24560) [     0.002]   << void func2(int)
+(24560) [     0.002]   >> void func2(int) (number of kids: 2)
+(24560) [     0.002]     Removing one kid
+(24560) [     0.002]     fib = 2
+(24560) [     0.002]   << void func2(int)
+(24560) [     0.002]   >> void func2(int) (number of kids: 1)
+(24560) [     0.002]     Removing one kid
+(24560) [     0.002]     fib = 1
+(24560) [     0.002]   << void func2(int)
+(24560) [     0.002]   >> void func2(int) (number of kids: 0)
+(24560) [     0.002]     Removing last kid
+(24560) [     0.002]     fib = 0
+(24560) [     0.002]   << void func2(int)
+(24560) [     0.002] << void func1()
+(24560) [     0.002] >> void all_levels()
+(24560) [     0.002]   A debug message
+(24560) [     0.002]   Information: 1556805595
+(24560) [     0.002]   Notice this
+(24560) [     0.002]   Warning
+(24560) [     0.002]   Error!
+(24560) [     0.002]   A critical error has occurred.
+(24560) [     0.002]   Printer is on fire!
+(24560) [     0.002]   Earthquake alert
+(24560) [     0.002] << void all_levels()
+(24560) [     0.002] >> void all_levels()
+(24560) [     0.002]   A debug message
+(24560) [     0.002]   Information: 1556805595
+(24560) [     0.002]   Notice this
+(24560) [     0.002]   Warning
+(24560) [     0.002]   Error!
+(24560) [     0.002]   A critical error has occurred.
+(24560) [     0.002]   Printer is on fire!
+(24560) [     0.002]   Earthquake alert
+(24560) [     0.002] << void all_levels()
+(24560) [     0.002] >> void all_levels()
+(24560) [     0.002]   Printer is on fire!
+(24560) [     0.002]   Earthquake alert
+(24560) [     0.002] << void all_levels()

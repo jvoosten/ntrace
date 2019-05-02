@@ -169,7 +169,7 @@ public:
 
 
 /**
-\brief Trace manager
+\brief Trace manager 
 
 Keeps track of input and output interfaces. Queues log messages from IInputs
 and sends to IOutputs. Uses threads to separate logging from actual writing.
@@ -200,6 +200,20 @@ public:
 
   virtual IModule *NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level = NTrace::Notice) = 0;
 
+  /** 
+   \brief Return list of modules 
+   */
+  virtual std::list<IModule *> NTRACE_CALL getModules () = 0;
+
+  /**
+   \brief Find a module by name
+   \param name Name used when registering; case sensitive.
+
+   Returns a null pointer if the module was not found.
+   */
+  virtual IModule *findModule (const std::string &name) const = 0;
+
+
   /**
   \brief Return list of current output modules
   \return List of pointers
@@ -226,8 +240,8 @@ public:
   \param msg Message to process
 
   This function will take the given message and queus it for distribute to the outputs. It
-  may re-order the message if there are other messages waiting in the output
-  queue and the timestamp of this message is before any of the other messages' timestamp.
+  may re-order the message if there are other messages waiting in the output queue
+   and the timestamp of this message is before any of the other messages' timestamp.
   */
   virtual void NTRACE_CALL pushMessage (const Message &msg) = 0;
 

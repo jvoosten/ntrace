@@ -23,7 +23,7 @@ for your release builds.
 * Outputs can be redirected to multiple outputs, but critical errors are logged to stderr (even in release mode)
 * Each log message is timestamped with millisecond precision, process and thread ID
 * Thread-safe
-* Available on Windows and Linux (other POSIX-like systems should work as well)
+* Available for Windows and Linux (other POSIX-like systems should work as well)
 
 # Sample output
 

@@ -28,7 +28,7 @@ It will accept messages and distribute them to the output objects.
 messages to the output(s). This is to minimize impact on execution speed of the main
 program while some output may take a while to process.
 
-*/
+ */
 
 
 class Manager: public IManager
@@ -39,9 +39,10 @@ public:
 
   virtual Timestamp NTRACE_CALL getStartTimestamp () const;
 
-  virtual IModule *NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level);
+  virtual IModule * NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level);
 
   virtual std::list<IModule *> NTRACE_CALL getModules ();
+  virtual IModule * NTRACE_CALL findModule (const std::string &name) const;
 
   virtual std::list<std::weak_ptr<IOutput>> NTRACE_CALL getOutputs ();
   virtual void NTRACE_CALL addOutput (IOutput *out);
@@ -51,9 +52,9 @@ public:
 
   virtual void NTRACE_CALL enableDebugOutput ();
 
-//  void log (const std::string &log_string);
-//  void error (const std::string &err_string);
-//  void out (const std::string &out_string);
+  //  void log (const std::string &log_string);
+  //  void error (const std::string &err_string);
+  //  void out (const std::string &out_string);
 
   void readConfiguration (std::istream &str);
   void readConfiguration (const std::string &filename);
@@ -62,9 +63,9 @@ public:
   //void setLogStream (std::ostream *str);
   //void setLogStream (const std::string &filename);
 
-//  void clearText ();
-//  void mark ();
-//  void setMute (bool);
+  //  void clearText ();
+  //  void mark ();
+  //  void setMute (bool);
 
 protected:
 
