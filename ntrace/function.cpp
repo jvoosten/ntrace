@@ -2,8 +2,8 @@
   \brief Function logger object
 
   This is the implementation of a helper object to make it easier to log
-  function enter and exit points. Using the TR_FUNCTION and TR_FUNC macros,
-  an object is created on the stack within your function. This automatically
+  function enter and exit points. Using TR_FUNC macro an object is created
+  on the stack within your function. This automatically
   logs entry and, more importantly, exit points of your function since the
   object is automatically destroyed when it gets out of scope.
 
@@ -29,19 +29,6 @@
     TR_FUNC("a = %d, string = '%s'", a, string);
 
     // your code here
-  }
-  \endcode
-
-  \par The latter can now substitute the old logging method:
-
-  \code
-  void MyFunction(int a, const char *string)
-  {
-    TR_ENTER();
-    TR(1, "a = %d, string = '%s'", a, string);
-
-    // your code here
-    TR_LEAVE();
   }
   \endcode
 
@@ -74,16 +61,13 @@ using namespace NTrace;
   to supply arguments.
 
  */
-Function::Function (IInput *trace_module, const char *funcname)
+Function::Function (IModule *trace_module, const char *funcname)
 {
   m_trace_module = trace_module;
   m_function_name = funcname;
-  m_logged = false; // precaution: in case a typo is made and the () operator is not called,
-  // don't log a spurious Leave event.
+  m_logged = false; // precaution: in case a typo is made and the () operator is not called do not log a spurious Leave event.
 }
 
-
-//Function::Function(Module *trace_module, const char *funcname, const char *fmt, ...)
 
 /**
   \brief Log without arguments.
@@ -92,12 +76,7 @@ void Function::operator ()()
 {
   if (m_trace_module)
   {
-    Message msg;
-
-    msg.module = m_trace_module;
-    msg.type = Message::Entry;
-    msg.message = m_function_name;
-    m_trace_module->getManager()->pushMessage (msg);
+    m_trace_module->enter (m_function_name);
     m_logged = true;
   }
 }
@@ -109,25 +88,18 @@ void Function::operator ()(const char *fmt, ...)
 {
   if (m_trace_module)
   {
-    Message msg;
     va_list args;
-    char LargeBuffer[2050];
+    char buffer[2050];
 
     va_start (args, fmt);
 #if defined(_WIN32)
-    _vsnprintf (LargeBuffer, 2048, fmt, args);
+    _vsnprintf (buffer, 2048, fmt, args);
 #else
-    vsnprintf (LargeBuffer, 2048, fmt, args);
+    vsnprintf (buffer, 2048, fmt, args);
 #endif
     va_end (args);
 
-    msg.module = m_trace_module;
-    msg.type = Message::Entry;
-    msg.message = m_function_name;
-    msg.message += " (";
-    msg.message += LargeBuffer;
-    msg.message += ")";
-    m_trace_module->getManager ()->pushMessage (msg);
+    m_trace_module->enter (m_function_name, buffer);
   }
   m_logged = true;
 }
@@ -136,22 +108,13 @@ Function::~Function ()
 {
   if (m_trace_module)
   {
-    Message msg;
     if (m_logged)
     {
-      msg.module = m_trace_module;
-      msg.type = Message::Exit;
-      msg.message = m_function_name;
-      m_trace_module->getManager ()->pushMessage (msg);
+      m_trace_module->leave (m_function_name);
     }
     else
     {
-      msg.module = m_trace_module;
-      msg.type = Message::Error;
-      msg.message = "!! ";
-      msg.message += m_function_name;
-      msg.message += " has malformed TR_FUNC macro!";
-      m_trace_module->getManager ()->pushMessage (msg);
+      m_trace_module->error (m_function_name + " has malformed TR_FUNC macro!");
     }
   }
 }

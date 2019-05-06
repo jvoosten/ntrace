@@ -7,7 +7,7 @@
 namespace NTrace
 {
 
-class IInput;
+class IModule;
 
 /**
   \brief Helper class to automatically log enter and leave events
@@ -19,7 +19,7 @@ class IInput;
 class Function
 {
 public:
-  NTRACE_EXPORT Function (IInput *trace_module, const char *funcname);
+  NTRACE_EXPORT Function (IModule *trace_module, const char *funcname);
   NTRACE_EXPORT ~Function ();
 
   NTRACE_EXPORT void NTRACE_CALL operator ()();
@@ -30,9 +30,9 @@ public:
 #endif
 
 private:
-  IInput *m_trace_module;
-  std::string m_function_name;
-  bool m_logged;
+  IModule *m_trace_module; ///< Pointer to the module object
+  std::string m_function_name;  ///< Name that was determined upon function invocation
+  bool m_logged;  ///< Whether an enter() was logged
 };
 
 } // namespace

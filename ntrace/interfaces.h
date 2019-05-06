@@ -45,7 +45,7 @@ registered as well.
 class NTRACE_EXPORT IInput
 {
 public:
-  // Obligatory empty virtual destructor
+  /// Obligatory empty virtual destructor
   virtual ~IInput () {};
 
   virtual IManager *NTRACE_CALL getManager () const = 0;
@@ -127,6 +127,33 @@ public:
   \param enable If true, function calls are tracked.
   */
   virtual void NTRACE_CALL setFunctionTracking (bool enable) = 0;
+
+
+  /**
+  \brief Track function enter without arguments
+  \param function The function name
+
+  Logs a function enter without any arguments, just the function name or filename & linenumber.
+  */
+  virtual void NTRACE_CALL enter (const std::string &function) = 0;
+
+  /**
+  \brief Track function enter with arguments
+  \param function The function name
+  \param args Formatted argsuments 
+
+  Logs a function enter with arguments; the arguments must be already formated in a string and are passed to the manager as a whole
+  (unfortunately, you cannot pass variadic arguments).
+  */
+  virtual void NTRACE_CALL enter (const std::string &function, const std::string &args) = 0;
+
+  /**
+  \brief Track function leave
+  \param function The function name
+
+  Logs the exit from a function call.
+  */
+  virtual void NTRACE_CALL leave (const std::string &function) = 0;
 };
 
 /**
@@ -211,7 +238,7 @@ public:
 
    Returns a null pointer if the module was not found.
    */
-  virtual IModule *findModule (const std::string &name) const = 0;
+  virtual IModule * NTRACE_CALL findModule (const std::string &name) const = 0;
 
 
   /**

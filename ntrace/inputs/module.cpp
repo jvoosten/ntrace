@@ -48,20 +48,6 @@ void Module::setFunctionTracking (bool enable)
 }
 
 #if 0
-/**
-  \brief Log function enter point
-
-  This function marks the entry of a function. It prefixes the function name with
-  >> and increments the indent level.
-
- */
-void Module::enter (const std::string &function_name)
-{
-  if (0 == m_level)
-    return;
-  m_manager->log (">> " + function_name);
-  m_manager->incIndent ();
-}
 
 /**
   \brief Log function enter with the arguments
@@ -266,5 +252,38 @@ void Module::out (const std::string &msg)
   m_manager->pushMessage (message);
 }
 
+void Module::enter (const std::string &function)
+{
+  if (m_functionTracking)
+  {
+    Message message;
 
+    message.type = Message::Entry;
+    message.message = function;
+    m_manager->pushMessage (message);
+  }
+}
 
+void Module::enter (const std::string &function, const std::string &args)
+{
+  if (m_functionTracking)
+  {
+    Message message;
+
+    message.type = Message::Entry;
+    message.message = function + " (" + args + ")";
+    m_manager->pushMessage (message);
+  }
+}
+
+void Module::leave (const std::string &function)
+{
+  if (m_functionTracking)
+  {
+    Message message;
+
+    message.type = Message::Exit;
+    message.message = function;
+    m_manager->pushMessage (message);
+  }
+}

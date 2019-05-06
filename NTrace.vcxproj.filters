@@ -54,7 +54,7 @@
     <ClCompile Include="ntrace\outputs\file_output.cpp">
       <Filter>Source Files\Outputs</Filter>
     </ClCompile>
-    <ClCompile Include="input_base.cpp">
+    <ClCompile Include="ntrace\input_base.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -92,7 +92,7 @@
     <ClInclude Include="ntrace\inputs\module.h">
       <Filter>Header Files\Inputs</Filter>
     </ClInclude>
-    <ClInclude Include="input_base.h">
+    <ClInclude Include="ntrace\input_base.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

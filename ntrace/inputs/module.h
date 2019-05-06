@@ -29,17 +29,20 @@ public:
   virtual void NTRACE_CALL setFunctionTracking (bool enable);
 
 #if defined(__GCC__) && (__GCC__ >= 4)
-  void NTRACE_CALL log (int level, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
-  void NTRACE_CALL error (const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
-  void NTRACE_CALL out (const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+  virtual void NTRACE_CALL log (int level, const char *fmt, ...) __attribute__ ((format (printf, 3, 4)));
+  virtual void NTRACE_CALL error (const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+  virtual void NTRACE_CALL out (const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
 #else
-  void NTRACE_CALL log (int level, const char *fmt, ...);
-  void NTRACE_CALL error (const char *fmt, ...);
-  void NTRACE_CALL out (const char *fmt, ...);
+  virtual void NTRACE_CALL log (int level, const char *fmt, ...);
+  virtual void NTRACE_CALL error (const char *fmt, ...);
+  virtual void NTRACE_CALL out (const char *fmt, ...);
 #endif
-  void NTRACE_CALL log (int level, const std::string &msg);
-  void NTRACE_CALL error (const std::string &msg);
-  void NTRACE_CALL out (const std::string &msg);
+  virtual void NTRACE_CALL log (int level, const std::string &msg);
+  virtual void NTRACE_CALL error (const std::string &msg);
+  virtual void NTRACE_CALL out (const std::string &msg);
+  virtual void NTRACE_CALL enter (const std::string &function);
+  virtual void NTRACE_CALL enter (const std::string &function, const std::string &args);
+  virtual void NTRACE_CALL leave (const std::string &function);
 
 private:
   int m_level; ///< Our current log level

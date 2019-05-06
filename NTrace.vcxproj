@@ -101,9 +101,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="input_base.cpp" />
     <ClCompile Include="ntrace\function.cpp" />
     <ClCompile Include="ntrace\inputs\module.cpp" />
+    <ClCompile Include="ntrace\input_base.cpp" />
     <ClCompile Include="ntrace\manager.cpp" />
     <ClCompile Include="ntrace\message.cpp" />
     <ClCompile Include="ntrace\outputs\debug_output.cpp" />
@@ -112,10 +112,10 @@
     <ClCompile Include="ntrace\timestamp.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="input_base.h" />
     <ClInclude Include="ntrace.h" />
     <ClInclude Include="ntrace\function.h" />
     <ClInclude Include="ntrace\inputs\module.h" />
+    <ClInclude Include="ntrace\input_base.h" />
     <ClInclude Include="ntrace\interfaces.h" />
     <ClInclude Include="ntrace\manager.h" />
     <ClInclude Include="ntrace\message.h" />
