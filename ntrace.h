@@ -24,7 +24,7 @@
   #error Compiler not supported (neither GNU C or Microsoft Visual Studio)
   #endif
 
-  #define TR_MODULE(name) static NTrace::IInput *s_trace_module = NTrace::IManager::instance()->registerModule(name)
+  #define TR_MODULE(name) static NTrace::IModule *s_trace_module = NTrace::IManager::instance()->registerModule(name)
 
   #define TR_FUNC     NTrace::Function TracerObject(s_trace_module, FUNCNAME); TracerObject
   #define TR          s_trace_module->log

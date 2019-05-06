@@ -15,7 +15,7 @@
 
 using namespace NTrace;
 
-static Manager *s_traceManager = 0;
+static Manager *s_traceManager = nullptr;
 
 /***************************************************************************/
 
@@ -44,7 +44,7 @@ Manager::~Manager ()
 
 IManager *IManager::instance ()
 {
-  if (s_traceManager == 0)
+  if (s_traceManager == nullptr)
   {
     s_traceManager = new Manager ();
   }
