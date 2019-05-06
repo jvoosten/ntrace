@@ -11,6 +11,7 @@
 namespace NTrace
 {
 
+// Forward declaration
 class IManager;
 
 /**
@@ -48,7 +49,11 @@ public:
   /// Obligatory empty virtual destructor
   virtual ~IInput () {};
 
-  virtual IManager *NTRACE_CALL getManager () const = 0;
+  /**
+   \brief Return the name if the Input channel
+
+   Each input channel should have a unique name which is returned by this function.
+   */
   virtual std::string NTRACE_CALL getName () const = 0;
 
 #if defined(__GCC__) && (__GCC__ >= 4)
@@ -56,12 +61,51 @@ public:
   virtual void NTRACE_CALL error (const char *fmt, ...) __attribute__ ((format (printf, 2, 3))) = 0;
   virtual void NTRACE_CALL out (const char *fmt, ...) __attribute__ ((format (printf, 2, 3))) = 0;
 #else
+  /**
+   \brief Log message with level and printf() style syntax
+   \param level Debug level of message
+   \param fmt Format string
+
+   Logs a message with given level and a formatting string that obeys printf() style
+   syntax; any additional arguments should follow the formatting string.
+   */
   virtual void NTRACE_CALL log (int level, const char *fmt, ...) = 0;
+  /**
+   \brief Log error with printf() style syntax
+
+   The message (with additional processed arguments) should appear
+   in the error output stream / device / logfile, but without timestamp,
+   indentation, etc.
+   */
   virtual void NTRACE_CALL error (const char *fmt, ...) = 0;
+  /**
+   \brief Output some text with printf() style syntax
+
+   This is almost equivalent to a regular printf() except it is routed
+   through the NTrace manager; the message should be output straight
+   in the output stream without timestamp, indentation, etc.
+   */
   virtual void NTRACE_CALL out (const char *fmt, ...) = 0;
 #endif
+  /**
+   \brief Log complete pre-formatted message with level
+   \param level Log level (see also \ref NTrace::Level)
+   \param msg Complete log message
+   */
   virtual void NTRACE_CALL log (int level, const std::string &msg) = 0;
+  /**
+   \brief Log an error
+   \param msg Error message
+
+   The message should appear on the error stream / device.
+   */
   virtual void NTRACE_CALL error (const std::string &msg) = 0;
+  /**
+   \brief Log some output
+   \param msg Message string
+
+   Should appear on the default output stream / device.
+   */
   virtual void NTRACE_CALL out (const std::string &msg) = 0;
 
 protected:
@@ -110,7 +154,7 @@ public:
   virtual int NTRACE_CALL getLevel () const = 0;
   /**
   \brief Set maximum log level.
-  \parame level New level; for recommended values see \ref Level.
+  \param level New level; for recommended values see \ref Level.
 
   Sets new maximum log level for the module; any messages with a level higher
   than this are discarded. Thus, the lower the level, the more important the message is.
@@ -199,7 +243,7 @@ public:
 \brief Trace manager 
 
 Keeps track of input and output interfaces. Queues log messages from IInputs
-and sends to IOutputs. Uses threads to separate logging from actual writing.
+and sends them to IOutputs. Uses a thread to separate logging from actual writing.
 
 */
 
@@ -223,8 +267,28 @@ public:
    */
   static void NTRACE_CALL shutdown ();
 
+  /**
+   \brief Return the starting time of the program
+   \return A Timestamp object
+
+   Returns the timestamp when IManager was instantiated as a starting point
+   for relative times.
+   */
   virtual Timestamp NTRACE_CALL getStartTimestamp () const = 0;
 
+  /**
+   \brief Create and register module
+   \param module_name Name to register with; case sensitive
+   \param initial_log_level Default log level for this module
+
+   If the given \p module_name does not exist yet, create a new module object and
+   return a pointer to its IModule interface. If the module exists, returns the
+   existing object.
+
+   The initial_log_level defaults to 5 (Notice).
+
+   \note Modules can never be deleted.
+   */
   virtual IModule *NTRACE_CALL registerModule (const std::string &module_name, int initial_log_level = NTrace::Notice) = 0;
 
   /** 
@@ -276,8 +340,8 @@ public:
   \brief Create default debug output stream
 
   Creates an output module that outputs messages to the default output streams:
-  # stdout and stderr on Linux
-  # OutputDebugString, std::cout and std::cerr on Windows
+  - stdout and stderr on Linux
+  - OutputDebugString, std::cout and std::cerr on Windows
   */
   virtual void NTRACE_CALL enableDebugOutput () = 0;
 

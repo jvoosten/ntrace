@@ -13,6 +13,30 @@
 #include "inputs/module.h"
 #include "outputs/debug_output.h"
 
+/**
+\mainpage notitle
+
+\section intro_sec Introduction
+
+ This part of the documentation deals with the internal workings of NTrace.
+ If you want to know how to integrate this library into your program read
+ the documentation in the doc/ directory (two steps above these generated files).
+
+ The library itself is not very large and most external visible parts are
+ exported using interfaces:
+
+ - \ref NTrace::IInput for generating log messages
+ - \ref NTrace::IModule for grouping files together in modules
+ - \ref NTrace::IOutput for writing log messages somewhere
+ - \ref NTrace::IManager that binds it all together
+
+ If you want to extend NTrace for your own purposes you should derive your
+ classes from these interfaces (most commonly IInput and IOuput).
+
+ */
+
+
+
 using namespace NTrace;
 
 static Manager *s_traceManager = nullptr;
@@ -445,66 +469,4 @@ void Manager::writeConfiguration (const std::string &filename)
   writeConfiguration (tracer);
   tracer.close ();
 }
-
-#if 0
-
-void Manager::clearText ()
-{
-  m_loggedText.clear ();
-}
-
-void Manager::mark ()
-{
-  m_loggedText.push_back ("-------------- MARK ---------------");
-  if (m_loggedText.size () >= m_maxLines)
-  {
-    m_loggedText.pop_front ();
-  }
-}
-
-void Manager::setMute (bool mute)
-{
-  m_mute = mute;
-}
-
-/**
- \brief Create prefix for log message
- 
- */
-std::string Manager::makePrefix ()
-{
-  std::string ret;
-
-  if (m_logPid || m_logTime)
-  {
-    if (m_logPid)
-    {
-      ret += m_pidString;
-    }
-#ifndef _WIN32
-    if (m_logTime)
-    {
-      char timebuf[20];
-      struct timeval now;
-      gettimeofday (&now, 0);
-
-      int sec = now.tv_sec - m_startTime.tv_sec;
-      int usec = now.tv_usec - m_startTime.tv_usec;
-      if (usec < 0)
-      {
-        usec += 1000000;
-        sec--;
-      }
-      snprintf (timebuf, 20, "[%4d.%03d]", sec, usec / 1000);
-      ret += timebuf;
-    }
-#endif
-    ret += " ";
-  }
-  return ret;
-}
-#endif
-
-
-
 

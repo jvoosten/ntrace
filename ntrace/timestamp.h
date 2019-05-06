@@ -17,7 +17,7 @@ It also performs simple arithmetic to compare and subtract timestamps.
 class NTRACE_EXPORT Timestamp
 {
 public:
-	Timestamp ();
+  Timestamp ();
   Timestamp (uint32_t time, uint32_t micro);
 
   uint32_t NTRACE_CALL getTime () const;

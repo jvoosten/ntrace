@@ -11,23 +11,12 @@
 
 using namespace NTrace;
 
-DebugOutput::DebugOutput ()
-  : OutputBase("ntrace.debug_output")
-{
-  m_indent = 0;
-}
-
 DebugOutput::DebugOutput (const Timestamp &start_time)
   : OutputBase ("ntrace.debug_output", start_time)
 {
   m_indent = 0;
 }
 
-
-DebugOutput::~DebugOutput ()
-{
-
-}
 
 void DebugOutput::saveMessage (const Message &msg)
 {
