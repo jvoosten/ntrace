@@ -10,7 +10,7 @@ endif
 lib_LTLIBRARIES=libntrace.la
 
 # Versioning CURRENT:REVISION:AGE
-libntrace_la_LDFLAGS=-version-info 7:0:0
+libntrace_la_LDFLAGS=-version-info 7:1:0
 	
 libntrace_la_SOURCES=\
   ntrace/function.cpp ntrace/manager.cpp ntrace/message.cpp \

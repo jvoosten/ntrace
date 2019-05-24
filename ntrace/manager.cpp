@@ -234,6 +234,8 @@ void Manager::stop ()
   if (m_outputThread.joinable () && !m_endLoop)
   {
     m_endLoop = true;
+    // trigger lock
+    m_messagesAvailable.notify_all ();
     m_outputThread.join ();
   }
 }
